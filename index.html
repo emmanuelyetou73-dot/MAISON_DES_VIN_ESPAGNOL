@@ -11,7 +11,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #fdf8f0; color: #2c2418; scroll-behavior: smooth; }
         
-        /* Palette inspirée du vin et de l'Espagne */
         :root {
             --bordeaux: #8B1E1E;
             --bordeaux-fonce: #5a1212;
@@ -21,90 +20,109 @@
             --creme: #FFF9F0;
             --text-sombre: #2c2418;
             --gris-doux: #E8DFD3;
-            --vert-olive: #6B7B3A;
         }
         
         .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
         
-        /* Header avec nouveau logo */
-        .site-header { background: rgba(255,249,240,0.96); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--bordeaux); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .site-header { background: rgba(255,249,240,0.96); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--bordeaux); }
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; flex-wrap: wrap; gap: 16px; }
-        
         .logo { text-align: center; }
         .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--bordeaux); letter-spacing: 2px; margin-bottom: 4px; }
         .logo h1 i { color: var(--or-espagne); font-size: 1.4rem; margin-right: 8px; }
         .logo p { font-size: 0.65rem; letter-spacing: 3px; color: var(--terre-cuite); font-weight: 500; }
-        
         .nav-links { display: flex; gap: 32px; list-style: none; flex-wrap: wrap; align-items: center; }
         .nav-links a { text-decoration: none; font-weight: 500; color: var(--text-sombre); cursor: pointer; transition: 0.2s; }
         .nav-links a:hover { color: var(--bordeaux); }
         .admin-login-btn { background: var(--bordeaux); color: white !important; padding: 8px 20px; border-radius: 50px; transition: 0.2s; }
         .admin-login-btn:hover { background: var(--bordeaux-fonce); transform: translateY(-2px); }
         .cart-icon { background: var(--beige-chaud); padding: 8px 18px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-weight: 600; border: 1px solid var(--gris-doux); cursor: pointer; transition: 0.2s; }
-        .cart-icon:hover { background: var(--bordeaux); color: white; border-color: var(--bordeaux); }
+        .cart-icon:hover { background: var(--bordeaux); color: white; }
         
-        /* Hero section */
-        .hero { background: linear-gradient(120deg, #FFF5E8 0%, #F5EDE0 100%); border-radius: 0 0 60px 60px; margin-bottom: 48px; padding: 50px 0; border-bottom: 1px solid var(--gris-doux); }
+        .hero { background: linear-gradient(120deg, #FFF5E8 0%, #F5EDE0 100%); border-radius: 0 0 60px 60px; margin-bottom: 48px; padding: 50px 0; }
         .hero-grid { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
-        .hero-text .badge { background: var(--bordeaux); color: white; display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 0.7rem; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px; }
-        .hero-text h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; line-height: 1.2; color: var(--bordeaux-fonce); margin-bottom: 20px; }
-        .hero-text p { font-size: 1rem; color: #5a4a3a; margin-bottom: 28px; }
+        .hero-text .badge { background: var(--bordeaux); color: white; display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 0.7rem; font-weight: 600; margin-bottom: 20px; }
+        .hero-text h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--bordeaux-fonce); margin-bottom: 20px; }
         .btn-primary { background: var(--bordeaux); border: none; padding: 12px 32px; border-radius: 50px; font-weight: 600; color: white; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-primary:hover { background: var(--bordeaux-fonce); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139,30,30,0.2); }
-        .hero-img { flex: 0.8; text-align: center; }
-        .hero-img img { max-width: 100%; border-radius: 32px; box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15); border: 1px solid var(--gris-doux); }
+        .btn-primary:hover { background: var(--bordeaux-fonce); transform: translateY(-2px); }
         
         .section-title { text-align: center; font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--bordeaux-fonce); margin-bottom: 12px; }
-        .section-sub { text-align: center; color: var(--terre-cuite); margin-bottom: 40px; font-size: 0.95rem; }
-        
         .filters { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
         .filter-btn { background: transparent; border: 1px solid var(--bordeaux); padding: 6px 20px; border-radius: 40px; cursor: pointer; transition: 0.2s; color: var(--bordeaux); font-weight: 500; }
         .filter-btn.active, .filter-btn:hover { background: var(--bordeaux); color: white; }
         
         .wines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px; }
-        .wine-card { background: white; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid var(--gris-doux); transition: all 0.3s ease; }
+        .wine-card { background: white; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid var(--gris-doux); transition: 0.3s; }
         .wine-card:hover { transform: translateY(-6px); box-shadow: 0 20px 35px -12px rgba(139,30,30,0.15); }
         .card-img { height: 220px; background-size: cover; background-position: center; position: relative; }
-        .region-tag { position: absolute; top: 14px; left: 14px; background: rgba(90,18,18,0.85); backdrop-filter: blur(4px); padding: 4px 14px; border-radius: 30px; font-size: 0.7rem; color: white; font-weight: 500; }
+        .region-tag { position: absolute; top: 14px; left: 14px; background: rgba(90,18,18,0.85); backdrop-filter: blur(4px); padding: 4px 14px; border-radius: 30px; font-size: 0.7rem; color: white; }
         .card-content { padding: 18px; }
-        .wine-title { font-size: 1.2rem; font-weight: 700; font-family: 'Playfair Display', serif; margin-bottom: 4px; color: var(--bordeaux-fonce); }
-        .wine-region { font-size: 0.7rem; color: var(--terre-cuite); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        .wine-desc { font-size: 0.8rem; color: #5a4a3a; line-height: 1.4; margin-bottom: 16px; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--gris-doux); padding-top: 14px; }
+        .wine-title { font-size: 1.2rem; font-weight: 700; font-family: 'Playfair Display', serif; color: var(--bordeaux-fonce); }
         .price { font-size: 1.3rem; font-weight: 700; color: var(--bordeaux); }
-        .add-to-cart { background: var(--beige-chaud); border: none; padding: 7px 14px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; color: var(--bordeaux); }
+        .add-to-cart { background: var(--beige-chaud); border: none; padding: 7px 14px; border-radius: 40px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--bordeaux); }
         .add-to-cart:hover { background: var(--bordeaux); color: white; }
         
-        /* Panier */
+        /* FORMULAIRE DE COMMANDE */
+        .checkout-form-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            border-top: 6px solid var(--bordeaux);
+        }
+        .checkout-form-modal.open { display: block; }
+        .checkout-form-modal h3 { color: var(--bordeaux); margin-bottom: 8px; font-family: 'Playfair Display', serif; }
+        .checkout-form-modal p { font-size: 0.8rem; color: var(--terre-cuite); margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--bordeaux-fonce); font-size: 0.85rem; }
+        .form-group label .required { color: #e74c3c; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gris-doux);
+            border-radius: 28px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--bordeaux);
+            box-shadow: 0 0 0 3px rgba(139,30,30,0.1);
+        }
+        .form-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .form-actions button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-submit { background: var(--bordeaux); color: white; }
+        .btn-submit:hover { background: var(--bordeaux-fonce); }
+        .btn-cancel { background: #e0dcd5; color: #333; }
+        
         .cart-sidebar { position: fixed; top: 0; right: -100%; width: 90%; max-width: 450px; height: 100%; background: white; z-index: 1000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 30px rgba(0,0,0,0.2); }
         .cart-sidebar.open { right: 0; }
         .cart-header { padding: 20px; background: var(--beige-chaud); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bordeaux); }
-        .cart-header h3 { color: var(--bordeaux); }
-        .close-cart { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--bordeaux); }
         .cart-items { flex: 1; overflow-y: auto; padding: 16px; }
-        .cart-item { border-bottom: 1px solid var(--gris-doux); padding: 12px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .cart-item-title { font-weight: 600; color: var(--bordeaux-fonce); }
-        .cart-item-controls button { background: var(--beige-chaud); border: none; width: 28px; height: 28px; border-radius: 30px; font-weight: bold; cursor: pointer; color: var(--bordeaux); }
-        .cart-total { padding: 18px; border-top: 2px solid var(--bordeaux); display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; }
-        .checkout-btn { background: var(--bordeaux); color: white; margin: 16px; padding: 14px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .checkout-btn:hover { background: var(--bordeaux-fonce); }
+        .cart-total { padding: 18px; border-top: 2px solid var(--bordeaux); display: flex; justify-content: space-between; font-weight: bold; }
+        .checkout-btn { background: var(--bordeaux); color: white; margin: 16px; padding: 14px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; visibility: hidden; }
         .overlay.active { visibility: visible; }
         
-        /* Login modal */
-        .login-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; z-index: 2000; display: none; box-shadow: 0 25px 50px rgba(0,0,0,0.3); border-top: 5px solid var(--bordeaux); }
+        .login-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; z-index: 2000; display: none; border-top: 5px solid var(--bordeaux); }
         .login-modal.open { display: block; }
         .login-modal input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 28px; }
         .login-modal button { width: 100%; padding: 12px; background: var(--bordeaux); color: white; border: none; border-radius: 28px; margin-top: 10px; cursor: pointer; }
         
-        /* Admin panel */
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f5f7; z-index: 3000; overflow-y: auto; }
         .admin-panel.show { display: block; }
         .admin-header { background: var(--bordeaux-fonce); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .admin-header h2 { font-size: 1.5rem; }
         .logout-btn { background: #e74c3c; border: none; padding: 10px 20px; border-radius: 30px; color: white; cursor: pointer; }
         .admin-stats { display: flex; gap: 20px; padding: 25px 30px; flex-wrap: wrap; }
-        .stat-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); min-width: 180px; border-left: 5px solid var(--bordeaux); }
+        .stat-card { background: white; padding: 20px; border-radius: 20px; border-left: 5px solid var(--bordeaux); min-width: 180px; }
         .stat-card .number { font-size: 2rem; font-weight: bold; color: var(--bordeaux); }
         .admin-tabs { display: flex; gap: 10px; padding: 0 30px; margin-bottom: 20px; }
         .admin-tab { background: white; border: none; padding: 10px 25px; border-radius: 40px; cursor: pointer; font-weight: 600; }
@@ -112,19 +130,15 @@
         .admin-section { display: none; background: white; margin: 0 30px 30px; border-radius: 24px; padding: 20px; }
         .admin-section.active-section { display: block; }
         .products-manager { display: grid; gap: 20px; }
-        .product-edit-card { border: 1px solid var(--gris-doux); border-radius: 20px; padding: 15px; margin-bottom: 15px; background: white; }
-        .product-edit-card label { font-weight: 600; font-size: 0.8rem; display: block; margin-top: 8px; margin-bottom: 4px; color: var(--bordeaux-fonce); }
-        .product-edit-card input, .product-edit-card textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; font-family: inherit; }
-        .product-edit-card .image-preview { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; margin-top: 10px; border: 1px solid #ddd; }
-        .save-product-btn { background: var(--bordeaux); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 15px; font-weight: 600; }
+        .product-edit-card { border: 1px solid var(--gris-doux); border-radius: 20px; padding: 15px; margin-bottom: 15px; }
+        .product-edit-card input, .product-edit-card textarea { width: 100%; padding: 8px 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 20px; }
+        .save-product-btn { background: var(--bordeaux); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
         .orders-table { width: 100%; border-collapse: collapse; }
         .orders-table th, .orders-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        .orders-table th { background: var(--beige-chaud); color: var(--bordeaux-fonce); }
+        .orders-table th { background: var(--beige-chaud); }
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: bold; }
         .status-en_attente { background: #fff3cd; color: #856404; }
-        .status-confirmee { background: #d4edda; color: #155724; }
-        .status-livree { background: #cce5ff; color: #004085; }
-        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bordeaux-fonce); color: white; padding: 12px 24px; border-radius: 50px; opacity: 0; transition: 0.2s; z-index: 3500; font-size: 0.85rem; }
+        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bordeaux-fonce); color: white; padding: 12px 24px; border-radius: 50px; opacity: 0; transition: 0.2s; z-index: 3500; }
         footer { background: var(--bordeaux-fonce); color: #F5EDE0; padding: 30px; text-align: center; margin-top: 50px; }
         @media (max-width: 768px) { .hero-text h2 { font-size: 1.8rem; } .logo h1 { font-size: 1.2rem; } }
     </style>
@@ -154,18 +168,17 @@
             <div class="hero-text">
                 <span class="badge">🍷 Découverte ibérique</span>
                 <h2>L'âme de l'Espagne<br>dans chaque gorgée</h2>
-                <p>Des vins élaborés sans sulfites ajoutés, issus de vignobles centenaires. Paiement à la livraison — 100% artisanal.</p>
-                <button class="btn-primary" id="exploreBtn">Découvrir la sélection <i class="fas fa-arrow-right"></i></button>
+                <p>Des vins élaborés sans sulfites ajoutés, issus de vignobles centenaires. Paiement à la livraison.</p>
+                <button class="btn-primary" id="exploreBtn">Découvrir <i class="fas fa-arrow-right"></i></button>
             </div>
             <div class="hero-img">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 420'%3E%3Crect width='500' height='420' fill='%23F5EDE0'/%3E%3Ctext x='250' y='200' font-size='22' font-family='Georgia' fill='%238B1E1E' text-anchor='middle'%3E🍷 Vignoble Espagnol%3C/text%3E%3Ctext x='250' y='240' font-size='14' fill='%23B86B3C' text-anchor='middle'%3ERioja · Ribera · Cava%3C/text%3E%3C/svg%3E" style="border-radius:32px; width:100%;" alt="Vignoble Espagne">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 420'%3E%3Crect width='500' height='420' fill='%23F5EDE0'/%3E%3Ctext x='250' y='200' font-size='22' fill='%238B1E1E' text-anchor='middle'%3E🍷 Vignoble Espagnol%3C/text%3E%3C/svg%3E" style="border-radius:32px; width:100%;">
             </div>
         </div>
     </section>
 
     <div class="container" id="catalogueSection">
         <h2 class="section-title">Nos vins d'exception</h2>
-        <p class="section-sub">Authentiques, élevés en fûts de chêne, avec des notes méditerranéennes</p>
         <div class="filters" id="filterGroup">
             <button class="filter-btn active" data-filter="all">Tous</button>
             <button class="filter-btn" data-filter="Rioja">Rioja</button>
@@ -180,22 +193,46 @@
 <footer>
     <div class="container">
         <p><i class="fas fa-hand-holding-heart"></i> Paiement à la livraison ou en boutique • Livraison offerte dès 150 000 FCFA</p>
-        <p style="margin-top:12px;">🍇 La Maison des Vins d'Espagne - Depuis 1982, passion et authenticité</p>
-        <p style="margin-top:8px; font-size:0.7rem;">&copy; 2025 La Maison des Vins d'Espagne</p>
+        <p style="margin-top:12px;">🍇 La Maison des Vins d'Espagne - Depuis 1982</p>
     </div>
 </footer>
 
 <div class="cart-sidebar" id="cartSidebar">
     <div class="cart-header"><h3><i class="fas fa-shopping-basket"></i> Mon panier</h3><button class="close-cart" id="closeCartBtn">&times;</button></div>
-    <div class="cart-items" id="cartItemsList"><div style="text-align:center; padding:30px;">🍷 Votre panier est vide</div></div>
+    <div class="cart-items" id="cartItemsList"><div style="text-align:center; padding:30px;">🍷 Panier vide</div></div>
     <div class="cart-total"><span>Total FCFA</span><span id="cartTotalPrice">0</span></div>
     <button class="checkout-btn" id="proceedCheckoutBtn">📋 Valider la commande</button>
 </div>
 <div class="overlay" id="overlayCart"></div>
 
+<!-- FORMULAIRE DE COMMANDE (Nom, Téléphone, Adresse) -->
+<div class="checkout-form-modal" id="checkoutFormModal">
+    <h3><i class="fas fa-clipboard-list"></i> Finaliser ma commande</h3>
+    <p>Veuillez remplir vos informations pour la livraison. Paiement à la réception.</p>
+    <div class="form-group">
+        <label>Nom complet <span class="required">*</span></label>
+        <input type="text" id="clientNom" placeholder="Votre nom et prénom" autocomplete="name">
+    </div>
+    <div class="form-group">
+        <label>Téléphone joignable <span class="required">*</span></label>
+        <input type="tel" id="clientTel" placeholder="+225 XX XX XX XX" autocomplete="tel">
+    </div>
+    <div class="form-group">
+        <label>Adresse de livraison <span class="required">*</span></label>
+        <textarea id="clientAdresse" rows="2" placeholder="Ville, quartier, rue, point de repère..."></textarea>
+    </div>
+    <div class="form-group">
+        <label>Informations complémentaires (optionnel)</label>
+        <textarea id="clientNotes" rows="2" placeholder="Instructions de livraison, code digicode, etc."></textarea>
+    </div>
+    <div class="form-actions">
+        <button class="btn-submit" id="confirmOrderBtn">✅ Confirmer la commande</button>
+        <button class="btn-cancel" id="closeCheckoutBtn">Fermer</button>
+    </div>
+</div>
+
 <div class="login-modal" id="loginModal">
     <h3><i class="fas fa-lock"></i> Espace Gestionnaire</h3>
-    <p style="margin:10px 0; color: #666; font-size:0.8rem;">Veuillez vous identifier</p>
     <input type="text" id="adminUser" placeholder="Identifiant">
     <input type="password" id="adminPass" placeholder="Mot de passe">
     <button id="doLoginBtn">Se connecter</button>
@@ -214,7 +251,7 @@
         <div style="overflow-x:auto;"><table class="orders-table"><thead><tr><th>ID</th><th>Client</th><th>Téléphone</th><th>Adresse</th><th>Total</th><th>Articles</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead><tbody id="ordersTableBody"></tbody></table></div>
     </div>
     <div id="productsSection" class="admin-section">
-        <h3><i class="fas fa-edit"></i> Modifier les produits (prix, image, description)</h3>
+        <h3><i class="fas fa-edit"></i> Modifier les produits</h3>
         <div id="productsManagerContainer" class="products-manager"></div>
     </div>
 </div>
@@ -229,11 +266,11 @@
         { id: 1, name: "Gran Reserva 904", region: "Rioja", price_eur: 49.90, desc: "Élevage 24 mois en fût de chêne, notes de cuir et fruits noirs.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
         { id: 2, name: "Viña Pomal Crianza", region: "Rioja", price_eur: 18.90, desc: "Fruits rouges, vanille naturelle. Vin bio certifié.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
         { id: 3, name: "Dominio del Águila", region: "Ribera del Duero", price_eur: 89.00, desc: "Granitique, très minéral. Agriculture biodynamique.", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
-        { id: 4, name: "Emilio Moro", region: "Ribera del Duero", price_eur: 27.50, desc: "Puissant, arômes de mûre sauvage et réglisse.", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
-        { id: 5, name: "Albariño Pazo de Señorans", region: "Rías Baixas", price_eur: 24.90, desc: "Fraîcheur saline, arômes d'agrumes. Vin blanc bio.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
-        { id: 6, name: "Fillaboa Albariño", region: "Rías Baixas", price_eur: 19.90, desc: "Vif et élégant, parfait avec fruits de mer.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
-        { id: 7, name: "Cava Gramona Brut", region: "Cava", price_eur: 22.00, desc: "Bulles fines, élevage 30 mois. Méthode traditionnelle.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
-        { id: 8, name: "Recaredo Reserva Particular", region: "Cava", price_eur: 45.00, desc: "Corporezza, notes de brioche. Cava de garde.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" }
+        { id: 4, name: "Emilio Moro", region: "Ribera del Duero", price_eur: 27.50, desc: "Puissant, arômes de mûre sauvage.", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
+        { id: 5, name: "Albariño Pazo de Señorans", region: "Rías Baixas", price_eur: 24.90, desc: "Fraîcheur saline, arômes d'agrumes.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 6, name: "Fillaboa Albariño", region: "Rías Baixas", price_eur: 19.90, desc: "Vif et élégant, parfait fruits de mer.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 7, name: "Cava Gramona Brut", region: "Cava", price_eur: 22.00, desc: "Bulles fines, élevage 30 mois.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 8, name: "Recaredo Reserva Particular", region: "Cava", price_eur: 45.00, desc: "Corporezza, notes de brioche.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" }
     ];
     
     let cart = {};
@@ -286,12 +323,12 @@
         if(!container) return;
         container.innerHTML = winesData.map(w => `
             <div class="product-edit-card">
-                <h4 style="color:var(--bordeaux);">🍷 ${escapeHtml(w.name)} - ${w.region}</h4>
-                <label>Nom :</label><input type="text" class="edit-name" value="${escapeHtml(w.name)}">
-                <label>Prix (EUR) :</label><input type="number" step="0.01" class="edit-price" value="${w.price_eur}">
-                <label>Description :</label><textarea class="edit-desc" rows="2">${escapeHtml(w.desc)}</textarea>
-                <label>URL Image :</label><input type="text" class="edit-image" value="${w.imageUrl}" style="width:100%;">
-                <img class="image-preview" src="${w.imageUrl}" onerror="this.src='https://via.placeholder.com/100?text=Image'">
+                <h4>🍷 ${escapeHtml(w.name)} - ${w.region}</h4>
+                <label>Nom:</label><input type="text" class="edit-name" value="${escapeHtml(w.name)}">
+                <label>Prix (EUR):</label><input type="number" step="0.01" class="edit-price" value="${w.price_eur}">
+                <label>Description:</label><textarea class="edit-desc" rows="2">${escapeHtml(w.desc)}</textarea>
+                <label>URL Image:</label><input type="text" class="edit-image" value="${w.imageUrl}">
+                <img src="${w.imageUrl}" style="width:80px; height:80px; object-fit:cover; border-radius:12px; margin-top:8px;" onerror="this.src='https://via.placeholder.com/80'">
                 <button class="save-product-btn" data-id="${w.id}">💾 Sauvegarder</button>
             </div>
         `).join('');
@@ -324,9 +361,8 @@
                 <div class="card-img" style="background-image: url('${w.imageUrl}'); background-size: cover;"><span class="region-tag">${w.region}</span></div>
                 <div class="card-content">
                     <div class="wine-title">${escapeHtml(w.name)}</div>
-                    <div class="wine-region"><i class="fas fa-map-marker-alt"></i> ${w.region}</div>
                     <div class="wine-desc">${escapeHtml(w.desc)}</div>
-                    <div class="price-row"><span class="price">${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA</span><button class="add-to-cart" data-id="${w.id}"><i class="fas fa-plus-circle"></i> Ajouter</button></div>
+                    <div class="price-row" style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;"><span class="price">${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA</span><button class="add-to-cart" data-id="${w.id}"><i class="fas fa-plus-circle"></i> Ajouter</button></div>
                 </div>
             </div>
         `).join('');
@@ -334,20 +370,53 @@
     }
     
     function addToCart(id) { const w = winesData.find(w=>w.id===id); if(cart[id]) cart[id].quantity++; else cart[id] = {...w, quantity:1, price_fcfa: toFCFA(w.price_eur)}; updateCartUI(); showToast(`${w.name} ajouté`); }
-    function updateCartUI() { let total=0, count=0, html=''; for(let id in cart) { const i=cart[id]; const s=i.price_fcfa*i.quantity; total+=s; count+=i.quantity; html+=`<div class="cart-item"><div><div class="cart-item-title">${i.name}</div><div>${i.price_fcfa.toLocaleString('fr-FR')} FCFA</div></div><div class="cart-item-controls"><button onclick="changeQty(${id},-1)">-</button><span>${i.quantity}</span><button onclick="changeQty(${id},1)">+</button><span>${s.toLocaleString('fr-FR')} FCFA</span></div></div>`; } document.getElementById('cartItemsList').innerHTML = html || '<div style="text-align:center; padding:30px;">Panier vide</div>'; document.getElementById('cartTotalPrice').innerText = total.toLocaleString('fr-FR'); document.getElementById('cartCount').innerText = count; }
+    function updateCartUI() { let total=0, count=0, html=''; for(let id in cart) { const i=cart[id]; const s=i.price_fcfa*i.quantity; total+=s; count+=i.quantity; html+=`<div style="border-bottom:1px solid #eee; padding:10px;"><b>${i.name}</b><br>${i.price_fcfa.toLocaleString('fr-FR')} FCFA x ${i.quantity}<br>${s.toLocaleString('fr-FR')} FCFA<br><button onclick="changeQty(${id},-1)">-</button> <button onclick="changeQty(${id},1)">+</button></div>`; } document.getElementById('cartItemsList').innerHTML = html || '<div style="padding:20px;text-align:center;">Panier vide</div>'; document.getElementById('cartTotalPrice').innerText = total.toLocaleString('fr-FR'); document.getElementById('cartCount').innerText = count; }
     window.changeQty = function(id,d) { if(cart[id]) { cart[id].quantity += d; if(cart[id].quantity <=0) delete cart[id]; updateCartUI(); } };
     function showToast(msg) { const t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',2500); }
     
+    // OUVERTURE DU FORMULAIRE DE COMMANDE
     document.getElementById('proceedCheckoutBtn').onclick = () => {
         if(Object.keys(cart).length === 0) { showToast("Panier vide"); return; }
-        const nom = prompt("Nom complet :"); const tel = prompt("Téléphone joignable :"); const adresse = prompt("Adresse de livraison :");
-        if(!nom || !tel || !adresse) { showToast("Tous les champs sont obligatoires"); return; }
-        let total=0, arts=[]; for(let id in cart) { total += cart[id].price_fcfa * cart[id].quantity; arts.push(`${cart[id].name} x${cart[id].quantity}`); }
-        addOrder({ nom_client: nom, telephone_client: tel, adresse_livraison: adresse, total_fcfa: total, articles: arts.join(', '), email_client: "client@exemple.com", notes: "" });
-        cart = {}; updateCartUI(); document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active');
+        document.getElementById('checkoutFormModal').classList.add('open');
+        document.getElementById('overlayCart').classList.add('active');
+    };
+    
+    // VALIDATION COMMANDE AVEC LE FORMULAIRE
+    document.getElementById('confirmOrderBtn').onclick = () => {
+        const nom = document.getElementById('clientNom').value.trim();
+        const tel = document.getElementById('clientTel').value.trim();
+        const adresse = document.getElementById('clientAdresse').value.trim();
+        
+        if(!nom) { showToast("Veuillez entrer votre nom complet"); document.getElementById('clientNom').focus(); return; }
+        if(!tel) { showToast("Veuillez entrer votre numéro de téléphone"); document.getElementById('clientTel').focus(); return; }
+        if(!adresse) { showToast("Veuillez entrer votre adresse de livraison"); document.getElementById('clientAdresse').focus(); return; }
+        
+        let total = 0, arts = [];
+        for(let id in cart) { total += cart[id].price_fcfa * cart[id].quantity; arts.push(`${cart[id].name} x${cart[id].quantity}`); }
+        
+        addOrder({ nom_client: nom, telephone_client: tel, adresse_livraison: adresse, total_fcfa: total, articles: arts.join(', '), notes: document.getElementById('clientNotes').value });
+        
+        cart = {};
+        updateCartUI();
+        document.getElementById('checkoutFormModal').classList.remove('open');
+        document.getElementById('overlayCart').classList.remove('open');
+        document.getElementById('cartSidebar').classList.remove('open');
+        
+        // Réinitialiser le formulaire
+        document.getElementById('clientNom').value = '';
+        document.getElementById('clientTel').value = '';
+        document.getElementById('clientAdresse').value = '';
+        document.getElementById('clientNotes').value = '';
+        
         alert(`✅ Commande enregistrée ! Un conseiller vous contactera au ${tel} pour le paiement à la livraison.`);
     };
     
+    document.getElementById('closeCheckoutBtn').onclick = () => {
+        document.getElementById('checkoutFormModal').classList.remove('open');
+        document.getElementById('overlayCart').classList.remove('active');
+    };
+    
+    // Admin authentification
     document.getElementById('adminLoginBtn').onclick = () => document.getElementById('loginModal').classList.add('open');
     document.getElementById('closeLoginBtn').onclick = () => document.getElementById('loginModal').classList.remove('open');
     document.getElementById('doLoginBtn').onclick = () => {
@@ -368,15 +437,17 @@
         document.querySelector('footer').style.display = 'block';
         showToast("Déconnecté");
     };
+    
     document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => {
         document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active-section'));
         document.getElementById(`${tab.dataset.tab}Section`).classList.add('active-section');
     }));
+    
     document.getElementById('cartIconBtn').onclick = () => { document.getElementById('cartSidebar').classList.add('open'); document.getElementById('overlayCart').classList.add('active'); };
     document.getElementById('closeCartBtn').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
-    document.getElementById('overlayCart').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
+    document.getElementById('overlayCart').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); document.getElementById('checkoutFormModal').classList.remove('open'); };
     document.getElementById('catalogLink').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
     document.getElementById('homeLink').onclick = () => window.scrollTo({top:0,behavior:'smooth'});
     document.getElementById('exploreBtn').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
@@ -385,6 +456,7 @@
         b.classList.add('active');
         renderWines();
     }));
+    
     function escapeHtml(s) { return String(s).replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;': m==='>'?'&gt;': m); }
     
     loadData();

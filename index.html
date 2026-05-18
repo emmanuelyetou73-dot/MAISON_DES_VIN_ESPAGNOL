@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>La Maison des Vins d'Espagne | Vins Bio & Artisanaux</title>
-    <meta name="description" content="Vente de vins bio espagnols. Paiement à la livraison. Espace gestionnaire intégré.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -79,10 +78,12 @@
         .admin-section { display: none; background: white; margin: 0 30px 30px; border-radius: 24px; padding: 20px; }
         .admin-section.active-section { display: block; }
         .products-manager { display: grid; gap: 20px; }
-        .product-edit-card { border: 1px solid var(--gris-doux); border-radius: 20px; padding: 15px; margin-bottom: 15px; }
-        .product-edit-card input, .product-edit-card textarea { width: 100%; padding: 8px 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 20px; }
-        .product-edit-card .image-preview { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; margin-top: 10px; }
-        .save-product-btn { background: var(--vert-sauge); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
+        .product-edit-card { border: 1px solid var(--gris-doux); border-radius: 20px; padding: 15px; margin-bottom: 15px; background: white; }
+        .product-edit-card label { font-weight: 600; font-size: 0.8rem; display: block; margin-top: 8px; margin-bottom: 4px; }
+        .product-edit-card input, .product-edit-card textarea { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 20px; font-family: inherit; }
+        .product-edit-card .image-preview { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; margin-top: 10px; border: 1px solid #ddd; }
+        .save-product-btn { background: var(--vert-sauge); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 15px; font-weight: 600; }
+        .save-product-btn:hover { background: var(--vert-fonce); }
         .orders-table { width: 100%; border-collapse: collapse; }
         .orders-table th, .orders-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         .orders-table th { background: var(--beige-nature); }
@@ -155,7 +156,7 @@
 </div>
 <div class="overlay" id="overlayCart"></div>
 
-<!-- Modal de connexion - sans affichage des identifiants pour plus de sécurité -->
+<!-- Modal de connexion -->
 <div class="login-modal" id="loginModal">
     <h3><i class="fas fa-lock"></i> Espace Gestionnaire</h3>
     <p style="margin:10px 0; color: #666; font-size:0.8rem;">Veuillez vous identifier</p>
@@ -165,7 +166,7 @@
     <button id="closeLoginBtn" style="background:#ccc;">Fermer</button>
 </div>
 
-<!-- Espace gestionnaire - invisible tant que non connecté -->
+<!-- Espace gestionnaire -->
 <div class="admin-panel" id="adminPanel">
     <div class="admin-header"><h2><i class="fas fa-store"></i> Dashboard Gestionnaire</h2><button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button></div>
     <div class="admin-stats" id="adminStats"></div>
@@ -185,14 +186,13 @@
 <div class="toast-msg" id="toastMsg"></div>
 
 <script>
-    // ========== IDENTIFIANTS ADMIN (modifiables ici par le propriétaire) ==========
-    // ⚠️ Le propriétaire peut modifier ces identifiants directement dans le code
+    // ========== IDENTIFIANTS ADMIN ==========
     const ADMIN_USERNAME = "admin";
     const ADMIN_PASSWORD = "admin123";
     
     const EUR_TO_FCFA = 655.957;
     
-    // Catalogue modifiable par le gestionnaire (stocké dans localStorage)
+    // Catalogue des vins
     let winesData = [
         { id: 1, name: "Gran Reserva 904", region: "Rioja", price_eur: 49.90, desc: "Élevage 24 mois en fût de chêne, notes de cuir et fruits noirs.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
         { id: 2, name: "Viña Pomal Crianza", region: "Rioja", price_eur: 18.90, desc: "Fruits rouges, vanille naturelle. Vin bio certifié.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
@@ -207,7 +207,7 @@
     let cart = {};
     let orders = [];
     
-    // Chargement des données depuis localStorage
+    // Chargement des données
     function loadData() {
         const savedWines = localStorage.getItem('vins_catalogue');
         if(savedWines) winesData = JSON.parse(savedWines);
@@ -235,7 +235,7 @@
         if(order) { order.statut = newStatus; saveOrders(); renderAdminPanel(); showToast("Statut mis à jour"); }
     }
     
-    // Rendu admin (uniquement appelé si l'admin est connecté)
+    // Rendu admin
     function renderAdminPanel() {
         const totalOrders = orders.length;
         const totalRevenue = orders.reduce((s,o) => s + (o.total_fcfa || 0), 0);
@@ -245,40 +245,59 @@
             <div class="stat-card"><h3>Chiffre d'affaires</h3><div class="number">${totalRevenue.toLocaleString('fr-FR')} FCFA</div></div>
             <div class="stat-card"><h3>En attente</h3><div class="number">${pending}</div></div>
         `;
-        const tbody = document.getElementById('ordersTableBody');
-        if(orders.length === 0) { tbody.innerHTML = '<tr><td colspan="9">Aucune commande</td></tr>'; return; }
-        tbody.innerHTML = orders.map(o => `
-            <tr>
-                <td>#${o.id}</td><td>${escapeHtml(o.nom_client)}</td><td>${o.telephone_client}</td>
-                <td>${escapeHtml((o.adresse_livraison||'').substring(0,30))}...</td>
-                <td>${(o.total_fcfa || 0).toLocaleString('fr-FR')}</td>
-                <td style="max-width:150px; overflow:hidden;">${(o.articles||'').substring(0,40)}...</td>
-                <td><span class="status-badge status-${o.statut}">${getStatusLabel(o.statut)}</span></td>
-                <td>${o.date}</td>
-                <td><select class="status-select" data-id="${o.id}">
-                    <option value="en_attente" ${o.statut==='en_attente'?'selected':''}>En attente</option>
-                    <option value="confirmee" ${o.statut==='confirmee'?'selected':''}>Confirmée</option>
-                    <option value="livree" ${o.statut==='livree'?'selected':''}>Livrée</option>
-                    <option value="annulee" ${o.statut==='annulee'?'selected':''}>Annulée</option>
-                </select></td>
-            </tr>
-        `).join('');
-        document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', () => updateOrderStatus(s.dataset.id, s.value)));
         
+        // Tableau des commandes
+        const tbody = document.getElementById('ordersTableBody');
+        if(orders.length === 0) { tbody.innerHTML = '<tr><td colspan="9">Aucune commande</td></tr>'; }
+        else {
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td>#${o.id}</td>
+                    <td>${escapeHtml(o.nom_client)}</td>
+                    <td>${o.telephone_client}</td>
+                    <td>${escapeHtml((o.adresse_livraison||'').substring(0,30))}...</td>
+                    <td>${(o.total_fcfa || 0).toLocaleString('fr-FR')}</td>
+                    <td style="max-width:150px;">${(o.articles||'').substring(0,40)}...</td>
+                    <td><span class="status-badge status-${o.statut}">${getStatusLabel(o.statut)}</span></td>
+                    <td>${o.date}</td>
+                    <td><select class="status-select" data-id="${o.id}">
+                        <option value="en_attente" ${o.statut==='en_attente'?'selected':''}>En attente</option>
+                        <option value="confirmee" ${o.statut==='confirmee'?'selected':''}>Confirmée</option>
+                        <option value="livree" ${o.statut==='livree'?'selected':''}>Livrée</option>
+                        <option value="annulee" ${o.statut==='annulee'?'selected':''}>Annulée</option>
+                    </select></td>
+                </tr>
+            `).join('');
+            document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', () => updateOrderStatus(s.dataset.id, s.value)));
+        }
+        
+        // Afficher les produits modifiables
         renderProductsManager();
     }
     
     function renderProductsManager() {
         const container = document.getElementById('productsManagerContainer');
+        if(!container) return;
+        
         container.innerHTML = winesData.map(w => `
             <div class="product-edit-card" data-id="${w.id}">
-                <strong>${escapeHtml(w.name)}</strong> - ${w.region}
-                <div><label>Nom: <input type="text" class="edit-name" value="${escapeHtml(w.name)}"></label></div>
-                <div><label>Prix (EUR): <input type="number" step="0.01" class="edit-price" value="${w.price_eur}"></label></div>
-                <div><label>Description: <textarea class="edit-desc" rows="2">${escapeHtml(w.desc)}</textarea></label></div>
-                <div><label>URL Image: <input type="text" class="edit-image" value="${w.imageUrl}" style="width:100%;"></label></div>
-                <img class="image-preview" src="${w.imageUrl}" onerror="this.src='https://via.placeholder.com/80?text=Image'">
-                <button class="save-product-btn" data-id="${w.id}">💾 Sauvegarder modifications</button>
+                <h4 style="color:var(--vert-fonce); margin-bottom:10px;">🍷 ${escapeHtml(w.name)} - ${w.region}</h4>
+                <label>Nom du vin :</label>
+                <input type="text" class="edit-name" value="${escapeHtml(w.name)}">
+                
+                <label>Prix (en euros) :</label>
+                <input type="number" step="0.01" class="edit-price" value="${w.price_eur}">
+                <div style="font-size:0.7rem; color:#666;">Prix en FCFA : ${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA</div>
+                
+                <label>Description :</label>
+                <textarea class="edit-desc" rows="2">${escapeHtml(w.desc)}</textarea>
+                
+                <label>URL de l'image :</label>
+                <input type="text" class="edit-image" value="${w.imageUrl}" style="width:100%;">
+                
+                <div><img class="image-preview" src="${w.imageUrl}" onerror="this.src='https://via.placeholder.com/100?text=Image+non+trouvée'"></div>
+                
+                <button class="save-product-btn" data-id="${w.id}">💾 Sauvegarder les modifications</button>
             </div>
         `).join('');
         
@@ -298,8 +317,8 @@
                     wine.imageUrl = newImage;
                     saveCatalogue();
                     renderWines();
-                    renderProductsManager();
-                    showToast(`✅ ${wine.name} modifié avec succès !`);
+                    renderProductsManager(); // Rafraîchir l'affichage
+                    showToast(`✅ ${wine.name} a été modifié avec succès !`);
                 }
             });
         });
@@ -307,7 +326,7 @@
     
     function getStatusLabel(s) { const map = { en_attente: 'En attente', confirmee: 'Confirmée', livree: 'Livrée', annulee: 'Annulée' }; return map[s]; }
     
-    // Affichage des vins (client)
+    // Affichage des vins côté client
     function renderWines() {
         const filter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
         let filtered = filter === 'all' ? winesData : winesData.filter(w => w.region === filter);
@@ -358,6 +377,7 @@
     
     function showToast(msg) { const t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',2500); }
     
+    // Validation commande
     document.getElementById('proceedCheckoutBtn').onclick = () => {
         if(Object.keys(cart).length === 0) { showToast("Panier vide"); return; }
         const nom = prompt("Nom complet :");
@@ -374,7 +394,7 @@
         alert(`✅ Commande enregistrée ! Un conseiller vous contactera au ${tel} pour le paiement à la livraison.`);
     };
     
-    // Admin authentification - les identifiants ne sont pas affichés
+    // Admin authentification
     document.getElementById('adminLoginBtn').onclick = () => document.getElementById('loginModal').classList.add('open');
     document.getElementById('closeLoginBtn').onclick = () => document.getElementById('loginModal').classList.remove('open');
     document.getElementById('doLoginBtn').onclick = () => {
@@ -388,7 +408,6 @@
             document.querySelector('footer').style.display = 'none';
             renderAdminPanel();
             showToast("Bienvenue gestionnaire");
-            // Réinitialiser les champs pour plus de sécurité
             document.getElementById('adminUser').value = '';
             document.getElementById('adminPass').value = '';
         } else {

@@ -36,7 +36,7 @@
         .wine-card { background: white; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid var(--gris-doux); transition: transform 0.2s; }
         .wine-card:hover { transform: translateY(-5px); }
         .card-img { height: 220px; background-size: cover; background-position: center; position: relative; }
-        .region-tag { position: absolute; top: 14px; left: 14px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; color: white; font-weight: 500; }
+        .region-tag { position: absolute; top: 14px; left: 14px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; color: white; }
         .card-content { padding: 18px; }
         .wine-title { font-size: 1.2rem; font-weight: 700; font-family: 'Playfair Display', serif; margin-bottom: 4px; }
         .wine-region { font-size: 0.7rem; color: var(--terre-cuite); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
@@ -73,7 +73,16 @@
         .admin-stats { display: flex; gap: 20px; padding: 25px 30px; flex-wrap: wrap; }
         .stat-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); min-width: 180px; }
         .stat-card .number { font-size: 2rem; font-weight: bold; color: var(--vert-fonce); }
-        .orders-section { background: white; margin: 0 30px 30px; border-radius: 24px; padding: 20px; overflow-x: auto; }
+        .admin-tabs { display: flex; gap: 10px; padding: 0 30px; margin-bottom: 20px; }
+        .admin-tab { background: white; border: none; padding: 10px 25px; border-radius: 40px; cursor: pointer; font-weight: 600; }
+        .admin-tab.active { background: var(--vert-sauge); color: white; }
+        .admin-section { display: none; background: white; margin: 0 30px 30px; border-radius: 24px; padding: 20px; }
+        .admin-section.active-section { display: block; }
+        .products-manager { display: grid; gap: 20px; }
+        .product-edit-card { border: 1px solid var(--gris-doux); border-radius: 20px; padding: 15px; margin-bottom: 15px; }
+        .product-edit-card input, .product-edit-card textarea { width: 100%; padding: 8px 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 20px; }
+        .product-edit-card .image-preview { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; margin-top: 10px; }
+        .save-product-btn { background: var(--vert-sauge); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
         .orders-table { width: 100%; border-collapse: collapse; }
         .orders-table th, .orders-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         .orders-table th { background: var(--beige-nature); }
@@ -81,10 +90,9 @@
         .status-en_attente { background: #fff3cd; color: #856404; }
         .status-confirmee { background: #d4edda; color: #155724; }
         .status-livree { background: #cce5ff; color: #004085; }
-        .status-annulee { background: #f8d7da; color: #721c24; }
-        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--vert-fonce); color: white; padding: 12px 24px; border-radius: 50px; opacity: 0; transition: 0.2s; z-index: 3500; font-size: 0.85rem; white-space: nowrap; }
+        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--vert-fonce); color: white; padding: 12px 24px; border-radius: 50px; opacity: 0; transition: 0.2s; z-index: 3500; font-size: 0.85rem; }
         footer { background: var(--vert-fonce); color: white; padding: 30px; text-align: center; margin-top: 50px; }
-        @media (max-width: 768px) { .orders-table { font-size: 0.7rem; } .hero-text h2 { font-size: 1.8rem; } .toast-msg { white-space: normal; text-align: center; } }
+        @media (max-width: 768px) { .orders-table { font-size: 0.7rem; } .hero-text h2 { font-size: 1.8rem; } }
     </style>
 </head>
 <body>
@@ -147,65 +155,79 @@
 </div>
 <div class="overlay" id="overlayCart"></div>
 
+<!-- Modal de connexion - sans affichage des identifiants pour plus de sécurité -->
 <div class="login-modal" id="loginModal">
     <h3><i class="fas fa-lock"></i> Espace Gestionnaire</h3>
-    <p style="margin:10px 0;">Identifiants : admin / admin123</p>
-    <input type="text" id="adminUser" placeholder="Identifiant" value="admin">
-    <input type="password" id="adminPass" placeholder="Mot de passe" value="admin123">
+    <p style="margin:10px 0; color: #666; font-size:0.8rem;">Veuillez vous identifier</p>
+    <input type="text" id="adminUser" placeholder="Identifiant">
+    <input type="password" id="adminPass" placeholder="Mot de passe">
     <button id="doLoginBtn">Se connecter</button>
     <button id="closeLoginBtn" style="background:#ccc;">Fermer</button>
 </div>
 
+<!-- Espace gestionnaire - invisible tant que non connecté -->
 <div class="admin-panel" id="adminPanel">
     <div class="admin-header"><h2><i class="fas fa-store"></i> Dashboard Gestionnaire</h2><button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button></div>
     <div class="admin-stats" id="adminStats"></div>
-    <div class="orders-section"><h3><i class="fas fa-boxes"></i> Commandes reçues</h3><div style="overflow-x:auto;"><table class="orders-table"><thead><tr><th>ID</th><th>Client</th><th>Téléphone</th><th>Adresse</th><th>Total (FCFA)</th><th>Articles</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead><tbody id="ordersTableBody"></tbody></table></div></div>
+    <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="orders">📦 Commandes</button>
+        <button class="admin-tab" data-tab="products">🍷 Gérer les produits</button>
+    </div>
+    <div id="ordersSection" class="admin-section active-section">
+        <h3><i class="fas fa-boxes"></i> Commandes reçues</h3>
+        <div style="overflow-x:auto;"><table class="orders-table"><thead><tr><th>ID</th><th>Client</th><th>Téléphone</th><th>Adresse</th><th>Total</th><th>Articles</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead><tbody id="ordersTableBody"></tbody></table></div>
+    </div>
+    <div id="productsSection" class="admin-section">
+        <h3><i class="fas fa-edit"></i> Modifier les produits (prix, image, description)</h3>
+        <div id="productsManagerContainer" class="products-manager"></div>
+    </div>
 </div>
-
 <div class="toast-msg" id="toastMsg"></div>
 
 <script>
-    // ========== CONVERSION EUR -> FCFA ==========
+    // ========== IDENTIFIANTS ADMIN (modifiables ici par le propriétaire) ==========
+    // ⚠️ Le propriétaire peut modifier ces identifiants directement dans le code
+    const ADMIN_USERNAME = "admin";
+    const ADMIN_PASSWORD = "admin123";
+    
     const EUR_TO_FCFA = 655.957;
     
-    // ========== CATALOGUE VINS CORRIGÉ (plus d'erreur "Carrizo blanco") ==========
-    const winesData = [
-        { id: 1, name: "Gran Reserva 904", region: "Rioja", price_eur: 49.90, desc: "Élevage 24 mois en fût de chêne, notes de cuir, fruits noirs et vanille. Grande complexité." },
-        { id: 2, name: "Viña Pomal Crianza", region: "Rioja", price_eur: 18.90, desc: "Fruits rouges, vanille naturelle. Vin bio certifié, sans sulfites ajoutés." },
-        { id: 3, name: "Dominio del Águila", region: "Ribera del Duero", price_eur: 89.00, desc: "Granitique, très minéral, élevage en amphore. Agriculture biodynamique." },
-        { id: 4, name: "Emilio Moro", region: "Ribera del Duero", price_eur: 27.50, desc: "Puissant, arômes de mûre sauvage et de réglisse. Tanins soyeux." },
-        { id: 5, name: "Albariño Pazo de Señorans", region: "Rías Baixas", price_eur: 24.90, desc: "Fraîcheur saline, arômes d'agrumes et de fleurs blanches. Vin blanc bio." },
-        { id: 6, name: "Fillaboa Albariño", region: "Rías Baixas", price_eur: 19.90, desc: "Vif et élégant, parfait avec fruits de mer. Certification bio depuis 2010." },
-        { id: 7, name: "Cava Gramona Brut", region: "Cava", price_eur: 22.00, desc: "Bulles fines, élevage 30 mois sur lies. Méthode traditionnelle bio." },
-        { id: 8, name: "Recaredo Reserva Particular", region: "Cava", price_eur: 45.00, desc: "Corporezza, notes de brioche et fruits secs. Cava de garde biodynamique." }
+    // Catalogue modifiable par le gestionnaire (stocké dans localStorage)
+    let winesData = [
+        { id: 1, name: "Gran Reserva 904", region: "Rioja", price_eur: 49.90, desc: "Élevage 24 mois en fût de chêne, notes de cuir et fruits noirs.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
+        { id: 2, name: "Viña Pomal Crianza", region: "Rioja", price_eur: 18.90, desc: "Fruits rouges, vanille naturelle. Vin bio certifié.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
+        { id: 3, name: "Dominio del Águila", region: "Ribera del Duero", price_eur: 89.00, desc: "Granitique, très minéral. Agriculture biodynamique.", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
+        { id: 4, name: "Emilio Moro", region: "Ribera del Duero", price_eur: 27.50, desc: "Puissant, arômes de mûre sauvage et réglisse.", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
+        { id: 5, name: "Albariño Pazo de Señorans", region: "Rías Baixas", price_eur: 24.90, desc: "Fraîcheur saline, arômes d'agrumes. Vin blanc bio.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 6, name: "Fillaboa Albariño", region: "Rías Baixas", price_eur: 19.90, desc: "Vif et élégant, parfait avec fruits de mer.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 7, name: "Cava Gramona Brut", region: "Cava", price_eur: 22.00, desc: "Bulles fines, élevage 30 mois. Méthode traditionnelle.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 8, name: "Recaredo Reserva Particular", region: "Cava", price_eur: 45.00, desc: "Corporezza, notes de brioche. Cava de garde.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" }
     ];
-    
-    // ========== IMAGES RÉELLES (photos libres de droits de vins) ==========
-    function getWineImage(region) {
-        const imageMap = {
-            'Rioja': 'https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop',
-            'Ribera del Duero': 'https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop',
-            'Rías Baixas': 'https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop',
-            'Cava': 'https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop'
-        };
-        return imageMap[region] || 'https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop';
-    }
     
     let cart = {};
     let orders = [];
     
-    function toFCFA(eur) { return Math.round(eur * EUR_TO_FCFA); }
+    // Chargement des données depuis localStorage
+    function loadData() {
+        const savedWines = localStorage.getItem('vins_catalogue');
+        if(savedWines) winesData = JSON.parse(savedWines);
+        const savedOrders = localStorage.getItem('vins_orders');
+        if(savedOrders) orders = JSON.parse(savedOrders);
+        else orders = [];
+    }
     
-    // Gestion des commandes (localStorage = base de données)
-    function loadOrders() { const saved = localStorage.getItem('vins_orders'); if(saved) orders = JSON.parse(saved); else orders = []; if(document.getElementById('adminPanel').classList.contains('show')) renderAdminPanel(); }
+    function saveCatalogue() { localStorage.setItem('vins_catalogue', JSON.stringify(winesData)); }
     function saveOrders() { localStorage.setItem('vins_orders', JSON.stringify(orders)); }
     
+    function toFCFA(eur) { return Math.round(eur * EUR_TO_FCFA); }
+    
+    // Gestion des commandes
     function addOrder(orderData) {
         const newOrder = { id: Date.now(), ...orderData, date: new Date().toLocaleString(), statut: 'en_attente' };
         orders.unshift(newOrder);
         saveOrders();
         if(document.getElementById('adminPanel').classList.contains('show')) renderAdminPanel();
-        showToast("✅ Nouvelle commande reçue ! Vérifiez l'espace gestionnaire.");
+        showToast("✅ Nouvelle commande reçue !");
     }
     
     function updateOrderStatus(orderId, newStatus) {
@@ -213,9 +235,10 @@
         if(order) { order.statut = newStatus; saveOrders(); renderAdminPanel(); showToast("Statut mis à jour"); }
     }
     
+    // Rendu admin (uniquement appelé si l'admin est connecté)
     function renderAdminPanel() {
         const totalOrders = orders.length;
-        const totalRevenue = orders.reduce((s,o) => s + o.total_fcfa, 0);
+        const totalRevenue = orders.reduce((s,o) => s + (o.total_fcfa || 0), 0);
         const pending = orders.filter(o => o.statut === 'en_attente').length;
         document.getElementById('adminStats').innerHTML = `
             <div class="stat-card"><h3>Total commandes</h3><div class="number">${totalOrders}</div></div>
@@ -226,12 +249,10 @@
         if(orders.length === 0) { tbody.innerHTML = '<tr><td colspan="9">Aucune commande</td></tr>'; return; }
         tbody.innerHTML = orders.map(o => `
             <tr>
-                <td>#${o.id}</td>
-                <td>${escapeHtml(o.nom_client)}</td>
-                <td>${o.telephone_client}</td>
-                <td>${escapeHtml(o.adresse_livraison?.substring(0,30)||'')}...</td>
-                <td>${o.total_fcfa.toLocaleString('fr-FR')}</td>
-                <td style="max-width:200px; overflow:hidden;">${(o.articles||'').substring(0,40)}...</td>
+                <td>#${o.id}</td><td>${escapeHtml(o.nom_client)}</td><td>${o.telephone_client}</td>
+                <td>${escapeHtml((o.adresse_livraison||'').substring(0,30))}...</td>
+                <td>${(o.total_fcfa || 0).toLocaleString('fr-FR')}</td>
+                <td style="max-width:150px; overflow:hidden;">${(o.articles||'').substring(0,40)}...</td>
                 <td><span class="status-badge status-${o.statut}">${getStatusLabel(o.statut)}</span></td>
                 <td>${o.date}</td>
                 <td><select class="status-select" data-id="${o.id}">
@@ -242,24 +263,63 @@
                 </select></td>
             </tr>
         `).join('');
-        document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', (e) => updateOrderStatus(s.dataset.id, s.value)));
+        document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', () => updateOrderStatus(s.dataset.id, s.value)));
+        
+        renderProductsManager();
+    }
+    
+    function renderProductsManager() {
+        const container = document.getElementById('productsManagerContainer');
+        container.innerHTML = winesData.map(w => `
+            <div class="product-edit-card" data-id="${w.id}">
+                <strong>${escapeHtml(w.name)}</strong> - ${w.region}
+                <div><label>Nom: <input type="text" class="edit-name" value="${escapeHtml(w.name)}"></label></div>
+                <div><label>Prix (EUR): <input type="number" step="0.01" class="edit-price" value="${w.price_eur}"></label></div>
+                <div><label>Description: <textarea class="edit-desc" rows="2">${escapeHtml(w.desc)}</textarea></label></div>
+                <div><label>URL Image: <input type="text" class="edit-image" value="${w.imageUrl}" style="width:100%;"></label></div>
+                <img class="image-preview" src="${w.imageUrl}" onerror="this.src='https://via.placeholder.com/80?text=Image'">
+                <button class="save-product-btn" data-id="${w.id}">💾 Sauvegarder modifications</button>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.save-product-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.dataset.id);
+                const card = btn.closest('.product-edit-card');
+                const newName = card.querySelector('.edit-name').value;
+                const newPrice = parseFloat(card.querySelector('.edit-price').value);
+                const newDesc = card.querySelector('.edit-desc').value;
+                const newImage = card.querySelector('.edit-image').value;
+                const wine = winesData.find(w => w.id === id);
+                if(wine) {
+                    wine.name = newName;
+                    wine.price_eur = newPrice;
+                    wine.desc = newDesc;
+                    wine.imageUrl = newImage;
+                    saveCatalogue();
+                    renderWines();
+                    renderProductsManager();
+                    showToast(`✅ ${wine.name} modifié avec succès !`);
+                }
+            });
+        });
     }
     
     function getStatusLabel(s) { const map = { en_attente: 'En attente', confirmee: 'Confirmée', livree: 'Livrée', annulee: 'Annulée' }; return map[s]; }
     
-    // Affichage des vins avec VRAIES IMAGES
+    // Affichage des vins (client)
     function renderWines() {
         const filter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
         let filtered = filter === 'all' ? winesData : winesData.filter(w => w.region === filter);
         document.getElementById('winesContainer').innerHTML = filtered.map(w => `
             <div class="wine-card">
-                <div class="card-img" style="background-image: url('${getWineImage(w.region)}'); background-size: cover;">
+                <div class="card-img" style="background-image: url('${w.imageUrl}'); background-size: cover;">
                     <span class="region-tag">${w.region}</span>
                 </div>
                 <div class="card-content">
-                    <div class="wine-title">${w.name}</div>
+                    <div class="wine-title">${escapeHtml(w.name)}</div>
                     <div class="wine-region"><i class="fas fa-map-marker-alt"></i> ${w.region}</div>
-                    <div class="wine-desc">${w.desc}</div>
+                    <div class="wine-desc">${escapeHtml(w.desc)}</div>
                     <div class="price-row">
                         <span class="price">${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA</span>
                         <button class="add-to-cart" data-id="${w.id}"><i class="fas fa-plus-circle"></i> Ajouter</button>
@@ -285,20 +345,7 @@
             const s = i.price_fcfa * i.quantity;
             total += s;
             count += i.quantity;
-            html += `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <div class="cart-item-title">${i.name}</div>
-                        <div style="font-size:0.8rem;">${i.price_fcfa.toLocaleString('fr-FR')} FCFA</div>
-                    </div>
-                    <div class="cart-item-controls">
-                        <button onclick="changeQty(${id}, -1)">-</button>
-                        <span>${i.quantity}</span>
-                        <button onclick="changeQty(${id}, 1)">+</button>
-                        <span style="min-width:70px; text-align:right;">${s.toLocaleString('fr-FR')} FCFA</span>
-                    </div>
-                </div>
-            `;
+            html += `<div class="cart-item"><div class="cart-item-info"><div class="cart-item-title">${i.name}</div><div>${i.price_fcfa.toLocaleString('fr-FR')} FCFA</div></div><div class="cart-item-controls"><button onclick="changeQty(${id},-1)">-</button><span>${i.quantity}</span><button onclick="changeQty(${id},1)">+</button><span>${s.toLocaleString('fr-FR')} FCFA</span></div></div>`;
         }
         document.getElementById('cartItemsList').innerHTML = html || '<div style="text-align:center; padding:30px;">Panier vide</div>';
         document.getElementById('cartTotalPrice').innerText = total.toLocaleString('fr-FR');
@@ -311,7 +358,6 @@
     
     function showToast(msg) { const t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',2500); }
     
-    // Validation commande avec collecte des infos client
     document.getElementById('proceedCheckoutBtn').onclick = () => {
         if(Object.keys(cart).length === 0) { showToast("Panier vide"); return; }
         const nom = prompt("Nom complet :");
@@ -328,13 +374,13 @@
         alert(`✅ Commande enregistrée ! Un conseiller vous contactera au ${tel} pour le paiement à la livraison.`);
     };
     
-    // Gestion authentification admin
+    // Admin authentification - les identifiants ne sont pas affichés
     document.getElementById('adminLoginBtn').onclick = () => document.getElementById('loginModal').classList.add('open');
     document.getElementById('closeLoginBtn').onclick = () => document.getElementById('loginModal').classList.remove('open');
     document.getElementById('doLoginBtn').onclick = () => {
         const u = document.getElementById('adminUser').value;
         const p = document.getElementById('adminPass').value;
-        if(u === 'admin' && p === 'admin123') {
+        if(u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
             document.getElementById('loginModal').classList.remove('open');
             document.getElementById('adminPanel').classList.add('show');
             document.getElementById('clientContent').style.display = 'none';
@@ -342,7 +388,13 @@
             document.querySelector('footer').style.display = 'none';
             renderAdminPanel();
             showToast("Bienvenue gestionnaire");
-        } else alert("Identifiants incorrects");
+            // Réinitialiser les champs pour plus de sécurité
+            document.getElementById('adminUser').value = '';
+            document.getElementById('adminPass').value = '';
+        } else {
+            alert("Identifiants incorrects");
+            document.getElementById('adminPass').value = '';
+        }
     };
     document.getElementById('logoutBtn').onclick = () => {
         document.getElementById('adminPanel').classList.remove('show');
@@ -352,17 +404,25 @@
         showToast("Déconnecté");
     };
     
+    // Tabs admin
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active-section'));
+            document.getElementById(`${tab.dataset.tab}Section`).classList.add('active-section');
+        });
+    });
+    
     // UI Panier
     document.getElementById('cartIconBtn').onclick = () => { document.getElementById('cartSidebar').classList.add('open'); document.getElementById('overlayCart').classList.add('active'); };
     document.getElementById('closeCartBtn').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
     document.getElementById('overlayCart').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
     
-    // Navigation
     document.getElementById('catalogLink').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
     document.getElementById('homeLink').onclick = () => window.scrollTo({top:0,behavior:'smooth'});
     document.getElementById('exploreBtn').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
     
-    // Filtres
     document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(btn=>btn.classList.remove('active'));
         b.classList.add('active');
@@ -371,8 +431,7 @@
     
     function escapeHtml(s) { return String(s).replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;': m==='>'?'&gt;': m); }
     
-    // Initialisation
-    loadOrders();
+    loadData();
     renderWines();
     updateCartUI();
 </script>

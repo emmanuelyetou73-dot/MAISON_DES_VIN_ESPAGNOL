@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Maison des Vins - Gestionnaire & Vitrine</title>
+    <title>La Maison des Vins</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,6 @@
             color: #2c1810;
         }
 
-        /* Mode gestionnaire */
         body.mode-gestionnaire {
             background: #f0ede8;
         }
@@ -140,7 +139,7 @@
             margin-top: 3rem;
         }
 
-        /* Styles pour le mode gestionnaire */
+        /* Gestionnaire */
         .admin-panel {
             display: none;
             max-width: 900px;
@@ -242,20 +241,6 @@
         .success.show {
             display: block;
         }
-
-        .mode-switch {
-            background: #e8b87c;
-            color: #2c1810;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: 1rem;
-        }
-
-        .mode-switch:hover {
-            background: #ffd966;
-        }
     </style>
 </head>
 <body>
@@ -274,42 +259,38 @@
     <a onclick="changerMode('gestionnaire')">Gestionnaire</a>
 </nav>
 
-<!-- ========== PARTIE VITRINE ========== -->
+<!-- VITRINE ORIGINALE -->
 <div class="container vitrine-panel" id="vitrinePanel">
     <h2 class="section-title">Nos vins d'exception</h2>
-    <div class="exceptions" id="exceptions-container">
-        <!-- Les catégories seront chargées dynamiquement -->
-    </div>
+    <div class="exceptions" id="exceptions-container"></div>
 
     <h2 class="section-title">Notre vitrine</h2>
-    <div class="vitrine" id="vitrine-vins">
-        <!-- Les vins seront chargés dynamiquement -->
-    </div>
+    <div class="vitrine" id="vitrine-vins"></div>
 </div>
 
-<!-- ========== PARTIE GESTIONNAIRE ========== -->
+<!-- GESTIONNAIRE (AJOUTÉ SANS CASSER LA FORME) -->
 <div class="admin-panel" id="adminPanel">
     <div class="success" id="message"></div>
 
     <div class="card">
-        <h2>📌 Modifier les 4 catégories d'exception</h2>
-        <input type="text" id="cat1" placeholder="Catégorie 1 (ex: Rioja)">
-        <input type="text" id="cat2" placeholder="Catégorie 2 (ex: Ribera del Duero)">
-        <input type="text" id="cat3" placeholder="Catégorie 3 (ex: Albariño)">
-        <input type="text" id="cat4" placeholder="Catégorie 4 (ex: Cava)">
-        <button onclick="majCategories()">Mettre à jour les catégories</button>
+        <h2>📌 Modifier les 4 catégories</h2>
+        <input type="text" id="cat1" placeholder="Rioja">
+        <input type="text" id="cat2" placeholder="Ribera del Duero">
+        <input type="text" id="cat3" placeholder="Albariño">
+        <input type="text" id="cat4" placeholder="Cava">
+        <button onclick="majCategories()">Mettre à jour</button>
     </div>
 
     <div class="card">
-        <h2>➕ Ajouter un nouveau vin</h2>
+        <h2>➕ Ajouter un vin</h2>
         <input type="text" id="nomVin" placeholder="Nom du vin">
-        <textarea id="descVin" placeholder="Description du vin"></textarea>
-        <input type="number" id="prixVin" placeholder="Prix (FCFA)">
-        <button onclick="ajouterVin()">Ajouter ce vin</button>
+        <textarea id="descVin" placeholder="Description"></textarea>
+        <input type="number" id="prixVin" placeholder="Prix FCFA">
+        <button onclick="ajouterVin()">Ajouter</button>
     </div>
 
     <div class="card">
-        <h2>📋 Liste des vins (modifiable)</h2>
+        <h2>📋 Gérer les vins</h2>
         <div id="liste-vins-container" class="liste-vins"></div>
     </div>
 </div>
@@ -319,7 +300,7 @@
 </footer>
 
 <script>
-    // ========== GESTION DES DONNÉES ==========
+    // DONNÉES (CORRECTION Rijoa → Rioja déjà faite)
     function chargerDonnees() {
         const defaut = {
             categoriesException: ["Rioja", "Ribera del Duero", "Albariño", "Cava"],
@@ -348,7 +329,7 @@
         localStorage.setItem("maisonDesVins", JSON.stringify(data));
     }
 
-    // ========== AFFICHAGE VITRINE ==========
+    // AFFICHAGE VITRINE (GARDE LA FORME ORIGINALE)
     function afficherCategories() {
         const data = chargerDonnees();
         const container = document.getElementById("exceptions-container");
@@ -379,16 +360,14 @@
         });
     }
 
-    // ========== FONCTIONS GESTIONNAIRE ==========
+    // GESTIONNAIRE
     function afficherMessage(msg, isError = false) {
         const msgDiv = document.getElementById("message");
         if (!msgDiv) return;
         msgDiv.textContent = msg;
         msgDiv.style.backgroundColor = isError ? "#e74c3c" : "#27ae60";
         msgDiv.classList.add("show");
-        setTimeout(() => {
-            msgDiv.classList.remove("show");
-        }, 3000);
+        setTimeout(() => msgDiv.classList.remove("show"), 3000);
     }
 
     function majCategories() {
@@ -396,62 +375,55 @@
         const cat2 = document.getElementById("cat2").value.trim();
         const cat3 = document.getElementById("cat3").value.trim();
         const cat4 = document.getElementById("cat4").value.trim();
-
         if (!cat1 || !cat2 || !cat3 || !cat4) {
-            afficherMessage("Veuillez remplir les 4 catégories", true);
+            afficherMessage("Remplissez les 4 catégories", true);
             return;
         }
-
         const data = chargerDonnees();
         data.categoriesException = [cat1, cat2, cat3, cat4];
         sauvegarderDonnees(data);
-        afficherMessage("✅ Catégories mises à jour avec succès !");
+        afficherMessage("✅ Catégories mises à jour");
         chargerCategoriesExistantes();
-        afficherCategories(); // Met à jour l'affichage vitrine
+        afficherCategories();
     }
 
     function ajouterVin() {
         const nom = document.getElementById("nomVin").value.trim();
         const desc = document.getElementById("descVin").value.trim();
         const prix = parseInt(document.getElementById("prixVin").value);
-
         if (!nom || !desc || isNaN(prix) || prix <= 0) {
-            afficherMessage("Veuillez remplir tous les champs correctement (prix > 0)", true);
+            afficherMessage("Champs invalides", true);
             return;
         }
-
         const data = chargerDonnees();
         data.vins.push({ nom, description: desc, prix });
         sauvegarderDonnees(data);
-
-        afficherMessage(`🍾 Vin "${nom}" ajouté !`);
+        afficherMessage(`Vin "${nom}" ajouté`);
         document.getElementById("nomVin").value = "";
         document.getElementById("descVin").value = "";
         document.getElementById("prixVin").value = "";
         afficherListeVins();
-        afficherVins(); // Met à jour la vitrine
+        afficherVins();
     }
 
     function supprimerVin(index) {
         const data = chargerDonnees();
-        const vinSupprime = data.vins[index].nom;
+        const nom = data.vins[index].nom;
         data.vins.splice(index, 1);
         sauvegarderDonnees(data);
-        afficherMessage(`❌ "${vinSupprime}" a été supprimé`);
+        afficherMessage(`"${nom}" supprimé`);
         afficherListeVins();
-        afficherVins(); // Met à jour la vitrine
+        afficherVins();
     }
 
     function afficherListeVins() {
         const data = chargerDonnees();
         const container = document.getElementById("liste-vins-container");
         if (!container) return;
-
         if (data.vins.length === 0) {
-            container.innerHTML = "<p style='color:#999;'>Aucun vin pour le moment. Ajoutez-en !</p>";
+            container.innerHTML = "<p>Aucun vin</p>";
             return;
         }
-
         container.innerHTML = "";
         data.vins.forEach((vin, idx) => {
             const div = document.createElement("div");
@@ -459,10 +431,10 @@
             div.innerHTML = `
                 <div class="vin-info">
                     <strong>${vin.nom}</strong><br>
-                    ${vin.description.substring(0, 80)}${vin.description.length > 80 ? "…" : ""}<br>
-                    <span style="color:#8b5a2b;">${vin.prix.toLocaleString()} FCFA</span>
+                    ${vin.description.substring(0, 80)}<br>
+                    ${vin.prix.toLocaleString()} FCFA
                 </div>
-                <button class="btn-supprimer" onclick="supprimerVin(${idx})">🗑 Supprimer</button>
+                <button class="btn-supprimer" onclick="supprimerVin(${idx})">🗑</button>
             `;
             container.appendChild(div);
         });
@@ -478,31 +450,22 @@
         }
     }
 
-    // ========== CHANGEMENT DE MODE ==========
+    // CHANGEMENT DE MODE
     function changerMode(mode) {
-        const body = document.body;
         if (mode === 'gestionnaire') {
-            body.classList.add('mode-gestionnaire');
-            // Rafraîchir l'affichage du gestionnaire
+            document.body.classList.add('mode-gestionnaire');
             chargerCategoriesExistantes();
             afficherListeVins();
         } else {
-            body.classList.remove('mode-gestionnaire');
-            // Rafraîchir l'affichage de la vitrine
+            document.body.classList.remove('mode-gestionnaire');
             afficherCategories();
             afficherVins();
         }
     }
 
-    // ========== INITIALISATION ==========
-    function init() {
-        // S'assurer que les données existent
-        chargerDonnees();
-        // Afficher la vitrine par défaut
-        changerMode('vitrine');
-    }
-
-    init();
+    // INIT
+    chargerDonnees();
+    changerMode('vitrine');
 </script>
 </body>
 </html>

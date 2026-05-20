@@ -16,6 +16,7 @@
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; flex-wrap: wrap; gap: 16px; }
         .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--bordeaux); }
         .logo h1 i { color: var(--or-espagne); margin-right: 8px; }
+        .logo p { font-size: 0.65rem; letter-spacing: 3px; color: #B86B3C; }
         .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; flex-wrap: wrap; }
         .nav-links a { text-decoration: none; font-weight: 500; color: #2c2418; cursor: pointer; }
         .admin-login-btn { background: var(--bordeaux); color: white !important; padding: 8px 20px; border-radius: 50px; }
@@ -109,16 +110,18 @@
 <div class="toast-msg" id="toastMsg"></div>
 
 <script>
-    // ========== CONFIGURATION - REMPLACEZ ICI ==========
-    // 👇 COLLEZ VOTRE URL SUPABASE (ex: https://xxxx.supabase.co)
+    // ⭐⭐⭐ VOUS DEVEZ REMPLACER CES 2 LIGNES ⭐⭐⭐
     const SUPABASE_URL = "https://tzvdlmlruigzpfkgfvzi.supabase.co";
-    // 👇 COLLEZ VOTRE CLÉ ANON PUBLIC
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6dmRsbWxydWlnenBma2dmdnppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNjQwOTIsImV4cCI6MjA5NDg0MDA5Mn0.T281ZX2xTHb74mObKe3Wd7n_52F4v_Qp7Q548eMEjBU";
-    // ==================================================
+    // ⭐⭐⭐ FIN DES REMPLACEMENTS ⭐⭐⭐
     
     const EUR_TO_FCFA = 655.957;
     let supabase = null;
     let adminAuthenticated = false;
+    let winesData = [];
+    let categories = {};
+    let orders = [];
+    let cart = {};
     
     // Initialiser Supabase
     try {
@@ -126,24 +129,22 @@
         console.log("✅ Supabase connecté");
     } catch(e) { console.error("Erreur Supabase", e); }
     
-    // Données locales (fallback)
-    let winesData = [];
-    let categories = {};
-    let orders = [];
-    let cart = {};
-    
     async function loadAllData() {
         if(!supabase) return;
+        
         // Charger les produits
-        const { data: products } = await supabase.from('products').select('*');
+        const { data: products, error: productsError } = await supabase.from('products').select('*');
+        if(productsError) console.error(productsError);
         if(products && products.length > 0) winesData = products;
-        else await initDefaultProducts();
+        
         // Charger les catégories
         const { data: cats } = await supabase.from('categories').select('*');
         if(cats && cats.length > 0) cats.forEach(c => categories[c.key] = c.value);
+        
         // Charger les commandes
         const { data: commandes } = await supabase.from('orders').select('*').order('id', { ascending: false });
         if(commandes) orders = commandes;
+        
         // Rafraîchir l'affichage
         renderFilters();
         renderWines();
@@ -151,50 +152,31 @@
         if(adminAuthenticated) renderAdminPanel();
     }
     
-    async function initDefaultProducts() {
-        const defaultProducts = [
-            { name: "Gran Reserva 904", region: "Rioja", price_eur: 49.90, description: "Élevage 24 mois en fût de chêne", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
-            { name: "Viña Pomal Crianza", region: "Rioja", price_eur: 18.90, description: "Fruits rouges, vanille naturelle", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
-            { name: "Dominio del Águila", region: "Ribera del Duero", price_eur: 89.00, description: "Granitique, très minéral", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
-            { name: "Emilio Moro", region: "Ribera del Duero", price_eur: 27.50, description: "Puissant, arômes de mûre", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
-            { name: "Albariño Pazo", region: "Rías Baixas", price_eur: 24.90, description: "Fraîcheur saline, agrumes", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
-            { name: "Fillaboa Albariño", region: "Rías Baixas", price_eur: 19.90, description: "Vif et élégant", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
-            { name: "Cava Gramona Brut", region: "Cava", price_eur: 22.00, description: "Bulles fines, élevage 30 mois", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
-            { name: "Recaredo Reserva", region: "Cava", price_eur: 45.00, description: "Corporezza, notes de brioche", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" }
-        ];
-        for(const p of defaultProducts) {
-            await supabase.from('products').insert(p);
-        }
-        winesData = defaultProducts;
-    }
-    
     async function saveProductToCloud(product) {
-        if(!supabase) return;
-        if(product.id) await supabase.from('products').update(product).eq('id', product.id);
-        else await supabase.from('products').insert(product);
+        if(product.id) {
+            await supabase.from('products').update(product).eq('id', product.id);
+        } else {
+            await supabase.from('products').insert(product);
+        }
         await loadAllData();
     }
     
     async function deleteProductFromCloud(id) {
-        if(!supabase) return;
         await supabase.from('products').delete().eq('id', id);
         await loadAllData();
     }
     
     async function updateCategoryInCloud(key, value) {
-        if(!supabase) return;
         await supabase.from('categories').upsert({ key, value });
         await loadAllData();
     }
     
     async function addOrderToCloud(order) {
-        if(!supabase) return;
         await supabase.from('orders').insert(order);
         await loadAllData();
     }
     
     async function updateOrderStatusCloud(id, status) {
-        if(!supabase) return;
         await supabase.from('orders').update({ statut: status }).eq('id', id);
         await loadAllData();
     }
@@ -202,13 +184,6 @@
     function toFCFA(eur) { return Math.round(eur * EUR_TO_FCFA); }
     function showToast(msg) { const t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',2500); }
     
-    async function addOrder(orderData) {
-        await addOrderToCloud(orderData);
-        showToast("✅ Nouvelle commande reçue !");
-        if(adminAuthenticated) renderAdminPanel();
-    }
-    
-    // Rendu des composants
     function renderAdminPanel() {
         if(!adminAuthenticated) return;
         document.getElementById('adminStats').innerHTML = `<div class="stat-card"><h3>Commandes</h3><div class="number">${orders.length}</div></div><div class="stat-card"><h3>CA</h3><div class="number">${orders.reduce((s,o)=>s+(o.total_fcfa||0),0).toLocaleString('fr-FR')} FCFA</div></div><div class="stat-card"><h3>En attente</h3><div class="number">${orders.filter(o=>o.statut==='en_attente').length}</div></div>`;
@@ -234,7 +209,7 @@
                 w.description = card.querySelector('.edit-desc').value;
                 w.imageUrl = card.querySelector('.edit-image').value;
                 await saveProductToCloud(w);
-                showToast(`✅ ${w.name} modifié et synchronisé sur tous les appareils !`);
+                showToast(`✅ ${w.name} modifié et synchronisé !`);
             }
         }));
         document.querySelectorAll('.delete-product-btn').forEach(btn => btn.addEventListener('click', async () => {
@@ -254,7 +229,7 @@
             await updateCategoryInCloud('Ribera del Duero', document.getElementById('catRibera').value);
             await updateCategoryInCloud('Rías Baixas', document.getElementById('catAlbariño').value);
             await updateCategoryInCloud('Cava', document.getElementById('catCava').value);
-            showToast("✅ Catégories mises à jour sur tous les appareils !");
+            showToast("✅ Catégories mises à jour !");
         });
     }
     
@@ -303,7 +278,6 @@
     document.getElementById('exploreBtn').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
     function escapeHtml(s) { return String(s).replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;': m==='>'?'&gt;': m); }
     
-    // Lancer l'application
     loadAllData();
 </script>
 </body>

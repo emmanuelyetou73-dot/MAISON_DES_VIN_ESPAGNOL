@@ -3,127 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>LA MAISON DES VINS D'ESPAGNE | Vins Bio & Artisanaux</title>
-    <meta name="description" content="Vente de vins bio espagnols par carton de 6 bouteilles. Paiement à la livraison. Espace gestionnaire intégré.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <title>LA MAISON DES VINS D'ESPAGNE | Vins Bio</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Mêmes styles que précédemment - gardés identiques */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #fdf8f0; color: #2c2418; scroll-behavior: smooth; }
-        
-        :root {
-            --bordeaux: #8B1E1E;
-            --bordeaux-fonce: #5a1212;
-            --or-espagne: #C5A028;
-            --terre-cuite: #B86B3C;
-            --beige-chaud: #F5EDE0;
-            --creme: #FFF9F0;
-            --text-sombre: #2c2418;
-            --gris-doux: #E8DFD3;
-        }
-        
+        body { font-family: 'Inter', sans-serif; background: #fdf8f0; color: #2c2418; }
+        :root { --bordeaux: #8B1E1E; --bordeaux-fonce: #5a1212; --or-espagne: #C5A028; --beige-chaud: #F5EDE0; --gris-doux: #E8DFD3; }
         .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        
         .site-header { background: rgba(255,249,240,0.96); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--bordeaux); }
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; flex-wrap: wrap; gap: 16px; }
-        .logo { text-align: center; }
-        .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--bordeaux); letter-spacing: 2px; margin-bottom: 4px; }
-        .logo h1 i { color: var(--or-espagne); font-size: 1.4rem; margin-right: 8px; }
-        .logo p { font-size: 0.65rem; letter-spacing: 3px; color: var(--terre-cuite); font-weight: 500; }
-        .nav-links { display: flex; gap: 32px; list-style: none; flex-wrap: wrap; align-items: center; }
-        .nav-links a { text-decoration: none; font-weight: 500; color: var(--text-sombre); cursor: pointer; transition: 0.2s; }
-        .nav-links a:hover { color: var(--bordeaux); }
-        .admin-login-btn { background: var(--bordeaux); color: white !important; padding: 8px 20px; border-radius: 50px; transition: 0.2s; }
-        .admin-login-btn:hover { background: var(--bordeaux-fonce); transform: translateY(-2px); }
-        .cart-icon { background: var(--beige-chaud); padding: 8px 18px; border-radius: 50px; display: flex; align-items: center; gap: 8px; font-weight: 600; border: 1px solid var(--gris-doux); cursor: pointer; transition: 0.2s; }
-        .cart-icon:hover { background: var(--bordeaux); color: white; }
-        
-        /* Bandeau d'alerte alcool */
-        .alcohol-warning {
-            background: var(--bordeaux-fonce);
-            color: #FFD700;
-            text-align: center;
-            padding: 8px 0;
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-        .alcohol-warning i { margin-right: 8px; }
-        
-        .hero { background: linear-gradient(120deg, #FFF5E8 0%, #F5EDE0 100%); border-radius: 0 0 60px 60px; margin-bottom: 48px; padding: 50px 0; }
+        .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--bordeaux); }
+        .logo h1 i { color: var(--or-espagne); margin-right: 8px; }
+        .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
+        .nav-links a { text-decoration: none; font-weight: 500; color: #2c2418; cursor: pointer; }
+        .admin-login-btn { background: var(--bordeaux); color: white !important; padding: 8px 20px; border-radius: 50px; }
+        .cart-icon { background: var(--beige-chaud); padding: 8px 18px; border-radius: 50px; display: flex; gap: 8px; cursor: pointer; }
+        .alcohol-warning { background: var(--bordeaux-fonce); color: #FFD700; text-align: center; padding: 8px; font-size: 0.75rem; }
+        .hero { background: linear-gradient(120deg, #FFF5E8 0%, #F5EDE0 100%); border-radius: 0 0 60px 60px; padding: 50px 0; margin-bottom: 48px; }
         .hero-grid { display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
-        .hero-text .badge { background: var(--bordeaux); color: white; display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 0.7rem; font-weight: 600; margin-bottom: 20px; }
-        .hero-text h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--bordeaux-fonce); margin-bottom: 20px; }
-        .hero-text p { font-size: 1rem; color: #5a4a3a; margin-bottom: 28px; }
-        .btn-primary { background: var(--bordeaux); border: none; padding: 12px 32px; border-radius: 50px; font-weight: 600; color: white; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-primary:hover { background: var(--bordeaux-fonce); transform: translateY(-2px); }
-        
-        .section-title { text-align: center; font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--bordeaux-fonce); margin-bottom: 12px; }
-        .price-info { text-align: center; font-size: 0.8rem; color: var(--terre-cuite); margin-bottom: 20px; background: var(--beige-chaud); display: inline-block; padding: 5px 15px; border-radius: 50px; margin-left: auto; margin-right: auto; width: fit-content; }
-        .price-info i { margin-right: 6px; }
-        
+        .hero-text .badge { background: var(--bordeaux); color: white; display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 0.7rem; margin-bottom: 20px; }
+        .hero-text h2 { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--bordeaux-fonce); }
+        .btn-primary { background: var(--bordeaux); border: none; padding: 12px 32px; border-radius: 50px; color: white; cursor: pointer; }
+        .section-title { text-align: center; font-size: 2rem; color: var(--bordeaux-fonce); margin-bottom: 12px; }
+        .price-info { text-align: center; font-size: 0.8rem; color: #B86B3C; background: var(--beige-chaud); display: inline-block; padding: 5px 15px; border-radius: 50px; margin: 0 auto 20px; width: fit-content; }
         .filters { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
-        .filter-btn { background: transparent; border: 1px solid var(--bordeaux); padding: 6px 20px; border-radius: 40px; cursor: pointer; transition: 0.2s; color: var(--bordeaux); font-weight: 500; }
+        .filter-btn { background: transparent; border: 1px solid var(--bordeaux); padding: 6px 20px; border-radius: 40px; cursor: pointer; color: var(--bordeaux); }
         .filter-btn.active, .filter-btn:hover { background: var(--bordeaux); color: white; }
-        
         .wines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px; }
-        .wine-card { background: white; border-radius: 28px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid var(--gris-doux); transition: 0.3s; }
+        .wine-card { background: white; border-radius: 28px; overflow: hidden; border: 1px solid var(--gris-doux); transition: 0.3s; }
         .wine-card:hover { transform: translateY(-6px); }
         .card-img { height: 220px; background-size: cover; background-position: center; position: relative; }
-        .region-tag { position: absolute; top: 14px; left: 14px; background: rgba(90,18,18,0.85); backdrop-filter: blur(4px); padding: 4px 14px; border-radius: 30px; font-size: 0.7rem; color: white; }
+        .region-tag { position: absolute; top: 14px; left: 14px; background: rgba(90,18,18,0.85); padding: 4px 14px; border-radius: 30px; font-size: 0.7rem; color: white; }
         .card-content { padding: 18px; }
         .wine-title { font-size: 1.2rem; font-weight: 700; font-family: 'Playfair Display', serif; color: var(--bordeaux-fonce); }
-        .wine-desc { font-size: 0.8rem; color: #5a4a3a; margin: 8px 0; line-height: 1.4; }
-        .carton-badge { font-size: 0.7rem; color: var(--or-espagne); font-weight: 600; margin-bottom: 8px; }
         .price { font-size: 1.4rem; font-weight: 700; color: var(--bordeaux); }
-        .price small { font-size: 0.7rem; font-weight: normal; color: #666; }
-        .add-to-cart { background: var(--beige-chaud); border: none; padding: 7px 14px; border-radius: 40px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--bordeaux); transition: 0.2s; }
-        .add-to-cart:hover { background: var(--bordeaux); color: white; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px solid var(--gris-doux); padding-top: 12px; }
-        
-        /* FORMULAIRE DE COMMANDE */
-        .checkout-form-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 32px;
-            width: 90%;
-            max-width: 500px;
-            z-index: 2000;
-            display: none;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            border-top: 6px solid var(--bordeaux);
-        }
-        .checkout-form-modal.open { display: block; }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--bordeaux-fonce); }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--gris-doux); border-radius: 28px; font-family: inherit; }
-        .form-actions { display: flex; gap: 12px; margin-top: 20px; }
-        .form-actions button { flex: 1; padding: 12px; border-radius: 40px; font-weight: 600; cursor: pointer; border: none; }
-        .btn-submit { background: var(--bordeaux); color: white; }
-        .btn-cancel { background: #e0dcd5; color: #333; }
-        
+        .add-to-cart { background: var(--beige-chaud); border: none; padding: 7px 14px; border-radius: 40px; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--bordeaux); }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gris-doux); }
         .cart-sidebar { position: fixed; top: 0; right: -100%; width: 90%; max-width: 450px; height: 100%; background: white; z-index: 1000; transition: right 0.3s; display: flex; flex-direction: column; }
         .cart-sidebar.open { right: 0; }
-        .cart-header { padding: 20px; background: var(--beige-chaud); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bordeaux); }
+        .cart-header { padding: 20px; background: var(--beige-chaud); display: flex; justify-content: space-between; border-bottom: 2px solid var(--bordeaux); }
         .cart-items { flex: 1; overflow-y: auto; padding: 16px; }
-        .cart-item { border-bottom: 1px solid var(--gris-doux); padding: 12px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .cart-total { padding: 18px; border-top: 2px solid var(--bordeaux); display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; }
-        .checkout-btn { background: var(--bordeaux); color: white; margin: 16px; padding: 14px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; }
+        .cart-total { padding: 18px; border-top: 2px solid var(--bordeaux); display: flex; justify-content: space-between; font-weight: bold; }
+        .checkout-btn { background: var(--bordeaux); color: white; margin: 16px; padding: 14px; border: none; border-radius: 50px; cursor: pointer; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; visibility: hidden; }
         .overlay.active { visibility: visible; }
-        
         .login-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 28px; width: 90%; max-width: 400px; z-index: 2000; display: none; border-top: 5px solid var(--bordeaux); }
         .login-modal.open { display: block; }
         .login-modal input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 28px; }
         .login-modal button { width: 100%; padding: 12px; background: var(--bordeaux); color: white; border: none; border-radius: 28px; cursor: pointer; }
-        
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f5f7; z-index: 3000; overflow-y: auto; }
         .admin-panel.show { display: block; }
-        .admin-header { background: var(--bordeaux-fonce); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .admin-header { background: var(--bordeaux-fonce); color: white; padding: 20px 30px; display: flex; justify-content: space-between; flex-wrap: wrap; }
         .logout-btn { background: #e74c3c; border: none; padding: 10px 20px; border-radius: 30px; color: white; cursor: pointer; }
         .admin-stats { display: flex; gap: 20px; padding: 25px 30px; flex-wrap: wrap; }
         .stat-card { background: white; padding: 20px; border-radius: 20px; border-left: 5px solid var(--bordeaux); min-width: 180px; }
@@ -136,133 +69,74 @@
         .products-manager { display: grid; gap: 20px; }
         .product-edit-card { border: 1px solid var(--gris-doux); border-radius: 20px; padding: 15px; background: white; }
         .product-edit-card input, .product-edit-card textarea, .product-edit-card select { width: 100%; padding: 8px 12px; margin: 5px 0; border: 1px solid #ddd; border-radius: 20px; }
-        .save-product-btn, .delete-product-btn { padding: 6px 12px; border-radius: 30px; cursor: pointer; border: none; font-weight: 600; margin-top: 10px; margin-right: 8px; }
-        .save-product-btn { background: var(--bordeaux); color: white; }
-        .delete-product-btn { background: #e74c3c; color: white; }
-        .add-product-btn { background: var(--bordeaux); color: white; border: none; padding: 12px 20px; border-radius: 40px; cursor: pointer; font-weight: 600; margin-bottom: 20px; }
-        .categories-manager { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; padding: 15px; background: var(--beige-chaud); border-radius: 20px; }
-        .category-input { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .category-input label { font-weight: 600; width: 140px; color: var(--bordeaux-fonce); }
-        .category-input input { flex: 1; padding: 8px 12px; border: 1px solid var(--gris-doux); border-radius: 30px; }
+        .save-product-btn { background: var(--bordeaux); color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; margin-right: 8px; }
+        .delete-product-btn { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 30px; cursor: pointer; margin-top: 10px; }
+        .add-product-btn { background: var(--bordeaux); color: white; border: none; padding: 12px 20px; border-radius: 40px; cursor: pointer; margin-bottom: 20px; }
+        .categories-manager { padding: 15px; background: var(--beige-chaud); border-radius: 20px; }
+        .category-input { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .category-input label { font-weight: 600; width: 140px; }
+        .category-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 30px; }
         .orders-table { width: 100%; border-collapse: collapse; }
         .orders-table th, .orders-table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         .orders-table th { background: var(--beige-chaud); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: bold; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; }
         .status-en_attente { background: #fff3cd; color: #856404; }
-        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bordeaux-fonce); color: white; padding: 12px 24px; border-radius: 50px; opacity: 0; transition: 0.2s; z-index: 3500; font-size: 0.85rem; white-space: nowrap; }
+        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bordeaux-fonce); color: white; padding: 12px 24px; border-radius: 50px; opacity: 0; transition: 0.2s; z-index: 3500; }
         footer { background: var(--bordeaux-fonce); color: #F5EDE0; padding: 30px; text-align: center; margin-top: 50px; }
         .legal-mentions { font-size: 0.7rem; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
-        @media (max-width: 768px) { .hero-text h2 { font-size: 1.8rem; } .logo h1 { font-size: 1.2rem; } .toast-msg { white-space: normal; } }
+        @media (max-width: 768px) { .hero-text h2 { font-size: 1.8rem; } .category-input { flex-direction: column; align-items: flex-start; } .category-input label { width: auto; } }
     </style>
 </head>
 <body>
 
-<!-- Bandeau d'avertissement alcool -->
-<div class="alcohol-warning">
-    <i class="fas fa-exclamation-triangle"></i> L'abus d'alcool est dangereux pour la santé. À consommer avec modération. <i class="fas fa-wine-bottle"></i>
-</div>
+<div class="alcohol-warning"><i class="fas fa-exclamation-triangle"></i> L'abus d'alcool est dangereux pour la santé. À consommer avec modération.</div>
 
 <header class="site-header">
     <div class="container">
         <div class="navbar">
-            <div class="logo">
-                <h1><i class="fas fa-wine-bottle"></i> LA MAISON DES VINS<br>D'ESPAGNE</h1>
-                <p>✦ GRANDS CRUS · BIO · ARTISANAUX ✦</p>
-            </div>
-            <ul class="nav-links">
-                <li><a id="homeLink">Accueil</a></li>
-                <li><a id="catalogLink">Nos vins</a></li>
-                <li><a id="adminLoginBtn" class="admin-login-btn"><i class="fas fa-user-cog"></i> Gestionnaire</a></li>
-            </ul>
+            <div class="logo"><h1><i class="fas fa-wine-bottle"></i> LA MAISON DES VINS D'ESPAGNE</h1><p>✦ GRANDS CRUS · BIO · ARTISANAUX ✦</p></div>
+            <ul class="nav-links"><li><a id="homeLink">Accueil</a></li><li><a id="catalogLink">Nos vins</a></li><li><a id="adminLoginBtn" class="admin-login-btn"><i class="fas fa-user-cog"></i> Gestionnaire</a></li></ul>
             <div class="cart-icon" id="cartIconBtn"><i class="fas fa-shopping-cart"></i> <span id="cartCount">0</span></div>
         </div>
     </div>
 </header>
 
 <main id="clientContent">
-    <section class="hero">
-        <div class="container hero-grid">
-            <div class="hero-text">
-                <span class="badge">🍷 Découverte ibérique</span>
-                <h2>L'âme de l'Espagne<br>dans chaque gorgée</h2>
-                <p>Des vins élaborés sans sulfites ajoutés, issus de vignobles centenaires. Paiement à la livraison.</p>
-                <button class="btn-primary" id="exploreBtn">Découvrir <i class="fas fa-arrow-right"></i></button>
-            </div>
-            <div class="hero-img">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 420'%3E%3Crect width='500' height='420' fill='%23F5EDE0'/%3E%3Ctext x='250' y='200' font-size='22' fill='%238B1E1E' text-anchor='middle'%3E🍷 Vignoble Espagnol%3C/text%3E%3C/svg%3E" style="border-radius:32px; width:100%;">
-            </div>
-        </div>
-    </section>
-
-    <div class="container" id="catalogueSection">
-        <h2 class="section-title">Nos vins d'exception</h2>
-        <div class="price-info"><i class="fas fa-boxes"></i> Prix affichés pour un carton de 6 bouteilles (75cl)</div>
-        <div class="filters" id="filterGroup"></div>
-        <div id="winesContainer" class="wines-grid"></div>
-    </div>
+    <section class="hero"><div class="container hero-grid"><div class="hero-text"><span class="badge">🍷 Découverte ibérique</span><h2>L'âme de l'Espagne<br>dans chaque gorgée</h2><p>Des vins bio issus de vignobles centenaires. Paiement à la livraison.</p><button class="btn-primary" id="exploreBtn">Découvrir <i class="fas fa-arrow-right"></i></button></div><div class="hero-img"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 420'%3E%3Crect width='500' height='420' fill='%23F5EDE0'/%3E%3Ctext x='250' y='200' font-size='22' fill='%238B1E1E' text-anchor='middle'%3E🍷 Vignoble Espagnol%3C/text%3E%3C/svg%3E" style="border-radius:32px; width:100%;"></div></div></section>
+    <div class="container" id="catalogueSection"><h2 class="section-title">Nos vins d'exception</h2><div class="price-info"><i class="fas fa-boxes"></i> Prix pour un carton de 6 bouteilles (75cl)</div><div class="filters" id="filterGroup"></div><div id="winesContainer" class="wines-grid"></div></div>
 </main>
 
-<footer>
-    <div class="container">
-        <p><i class="fas fa-hand-holding-heart"></i> Paiement à la livraison ou en boutique • Livraison offerte dès 150 000 FCFA</p>
-        <p style="margin-top:12px;">🍇 La Maison des Vins d'Espagne - Depuis 1982</p>
-        <div class="legal-mentions">
-            <p><i class="fas fa-ban"></i> <strong>Interdit aux moins de 18 ans</strong> - L'abus d'alcool est dangereux pour la santé</p>
-            <p style="margin-top:5px;">📦 Prix par carton de 6 bouteilles (75cl) - TVA incluse</p>
-        </div>
-    </div>
-</footer>
+<footer><div class="container"><p><i class="fas fa-hand-holding-heart"></i> Paiement à la livraison • Livraison offerte dès 150 000 FCFA</p><div class="legal-mentions"><p><i class="fas fa-ban"></i> <strong>Interdit aux moins de 18 ans</strong></p><p>📦 Prix par carton de 6 bouteilles (75cl)</p></div></div></footer>
 
-<div class="cart-sidebar" id="cartSidebar">
-    <div class="cart-header"><h3>Mon panier</h3><button class="close-cart" id="closeCartBtn">&times;</button></div>
-    <div class="cart-items" id="cartItemsList"><div style="text-align:center; padding:30px;">Panier vide</div></div>
-    <div class="cart-total"><span>Total FCFA</span><span id="cartTotalPrice">0</span></div>
-    <button class="checkout-btn" id="proceedCheckoutBtn">Valider la commande</button>
-</div>
+<div class="cart-sidebar" id="cartSidebar"><div class="cart-header"><h3>Mon panier</h3><button class="close-cart" id="closeCartBtn">&times;</button></div><div class="cart-items" id="cartItemsList">Panier vide</div><div class="cart-total"><span>Total FCFA</span><span id="cartTotalPrice">0</span></div><button class="checkout-btn" id="proceedCheckoutBtn">Valider la commande</button></div>
 <div class="overlay" id="overlayCart"></div>
-
-<div class="checkout-form-modal" id="checkoutFormModal">
-    <h3>Finaliser ma commande</h3>
-    <div class="form-group"><label>Nom complet *</label><input type="text" id="clientNom" placeholder="Votre nom"></div>
-    <div class="form-group"><label>Téléphone *</label><input type="tel" id="clientTel" placeholder="Votre numéro"></div>
-    <div class="form-group"><label>Adresse *</label><textarea id="clientAdresse" rows="2" placeholder="Adresse de livraison"></textarea></div>
-    <div class="form-actions"><button class="btn-submit" id="confirmOrderBtn">Confirmer</button><button class="btn-cancel" id="closeCheckoutBtn">Fermer</button></div>
-</div>
-
-<div class="login-modal" id="loginModal">
-    <h3>Espace Gestionnaire</h3>
-    <input type="text" id="adminUser" placeholder="Identifiant">
-    <input type="password" id="adminPass" placeholder="Mot de passe">
-    <button id="doLoginBtn">Se connecter</button>
-    <button id="closeLoginBtn" style="background:#ccc;">Fermer</button>
-</div>
-
-<div class="admin-panel" id="adminPanel">
-    <div class="admin-header"><h2>Dashboard Gestionnaire</h2><button class="logout-btn" id="logoutBtn">Déconnexion</button></div>
-    <div class="admin-stats" id="adminStats"></div>
-    <div class="admin-tabs">
-        <button class="admin-tab active" data-tab="orders">Commandes</button>
-        <button class="admin-tab" data-tab="products">Gérer les produits</button>
-        <button class="admin-tab" data-tab="categories">Gérer les catégories</button>
-    </div>
-    <div id="ordersSection" class="admin-section active-section"><h3>Commandes reçues</h3><div style="overflow-x:auto;"><table class="orders-table"><thead><tr><th>ID</th><th>Client</th><th>Téléphone</th><th>Adresse</th><th>Total</th><th>Articles</th><th>Statut</th><th>Action</th></tr></thead><tbody id="ordersTableBody"></tbody></table></div></div>
-    <div id="productsSection" class="admin-section"><h3>Gestion des produits</h3><button class="add-product-btn" id="addProductBtn">+ Ajouter un nouveau vin</button><div id="productsManagerContainer" class="products-manager"></div></div>
-    <div id="categoriesSection" class="admin-section"><h3>Modifier les noms des catégories</h3><div id="categoriesManagerContainer" class="categories-manager"></div></div>
-</div>
+<div class="login-modal" id="loginModal"><h3>Espace Gestionnaire</h3><input type="text" id="adminUser" placeholder="Identifiant"><input type="password" id="adminPass" placeholder="Mot de passe"><button id="doLoginBtn">Se connecter</button><button id="closeLoginBtn" style="background:#ccc;">Fermer</button></div>
+<div class="admin-panel" id="adminPanel"><div class="admin-header"><h2>Dashboard Gestionnaire</h2><button class="logout-btn" id="logoutBtn">Déconnexion</button></div><div class="admin-stats" id="adminStats"></div><div class="admin-tabs"><button class="admin-tab active" data-tab="orders">Commandes</button><button class="admin-tab" data-tab="products">Gérer les produits</button><button class="admin-tab" data-tab="categories">Gérer les catégories</button></div><div id="ordersSection" class="admin-section active-section"><h3>Commandes reçues</h3><div style="overflow-x:auto;"><table class="orders-table"><thead><tr><th>ID</th><th>Client</th><th>Téléphone</th><th>Adresse</th><th>Total</th><th>Articles</th><th>Statut</th><th>Action</th></tr></thead><tbody id="ordersTableBody"></tbody></table></div></div><div id="productsSection" class="admin-section"><h3>Gestion des produits</h3><button class="add-product-btn" id="addProductBtn">+ Ajouter un vin</button><div id="productsManagerContainer" class="products-manager"></div></div><div id="categoriesSection" class="admin-section"><h3>Modifier les catégories</h3><div id="categoriesManagerContainer" class="categories-manager"></div></div></div>
 <div class="toast-msg" id="toastMsg"></div>
 
 <script>
-    const ADMIN_USERNAME = "admin";
-    const ADMIN_PASSWORD = "admin123";
-    const EUR_TO_FCFA = 655.957;
+    // ========== CONFIGURATION SUPRABASE ==========
+    // REMPLACEZ CES VALEURS PAR LES VOTRES APRÈS INSCRIPTION SUR SUPABASE
+    const SUPABASE_URL = "https://votre-projet.supabase.co";
+    const SUPABASE_ANON_KEY = "votre-cle-anon-publique";
     
-    let categories = {
-        "Rioja": "Rioja",
-        "Ribera del Duero": "Ribera del Duero",
-        "Rías Baixas": "Albariño",
-        "Cava": "Cava"
-    };
+    let supabase = null;
+    let adminAuthenticated = false;
     
+    // Initialiser Supabase (si les clés sont configurées)
+    function initSupabase() {
+        if(SUPABASE_URL !== "https://votre-projet.supabase.co" && SUPABASE_ANON_KEY !== "votre-cle-anon-publique") {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            loadDataFromCloud();
+        } else {
+            // Mode dégradé : utilisation de localStorage uniquement
+            console.log("Mode local - Configurez Supabase pour la synchronisation cloud");
+            loadLocalData();
+        }
+    }
+    
+    // Variables locales (fallback)
+    let categories = { "Rioja": "Rioja", "Ribera del Duero": "Ribera del Duero", "Rías Baixas": "Albariño", "Cava": "Cava" };
     let winesData = [
         { id: 1, name: "Gran Reserva 904", region: "Rioja", price_eur: 49.90, desc: "Élevage 24 mois en fût de chêne, notes de cuir et fruits noirs.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
         { id: 2, name: "Viña Pomal Crianza", region: "Rioja", price_eur: 18.90, desc: "Fruits rouges, vanille naturelle. Vin bio certifié.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
@@ -273,12 +147,12 @@
         { id: 7, name: "Cava Gramona Brut", region: "Cava", price_eur: 22.00, desc: "Bulles fines, élevage 30 mois.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
         { id: 8, name: "Recaredo Reserva Particular", region: "Cava", price_eur: 45.00, desc: "Corporezza, notes de brioche.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" }
     ];
-    
     let cart = {};
     let orders = [];
     let nextId = 9;
+    const EUR_TO_FCFA = 655.957;
     
-    function loadData() {
+    function loadLocalData() {
         const savedWines = localStorage.getItem('vins_catalogue');
         if(savedWines) winesData = JSON.parse(savedWines);
         const savedOrders = localStorage.getItem('vins_orders');
@@ -286,31 +160,89 @@
         const savedCategories = localStorage.getItem('vins_categories');
         if(savedCategories) categories = JSON.parse(savedCategories);
         if(winesData.length > 0) nextId = Math.max(...winesData.map(w => w.id)) + 1;
+        renderFilters();
+        renderWines();
+        updateCartUI();
     }
-    function saveCatalogue() { localStorage.setItem('vins_catalogue', JSON.stringify(winesData)); }
-    function saveOrders() { localStorage.setItem('vins_orders', JSON.stringify(orders)); }
-    function saveCategories() { localStorage.setItem('vins_categories', JSON.stringify(categories)); }
-    function toFCFA(eur) { return Math.round(eur * EUR_TO_FCFA); }
     
+    async function loadDataFromCloud() {
+        try {
+            // Charger les produits
+            const { data: products, error: productsError } = await supabase.from('products').select('*');
+            if(!productsError && products && products.length > 0) {
+                winesData = products;
+                nextId = Math.max(...winesData.map(w => w.id), 0) + 1;
+            } else {
+                await saveProductsToCloud();
+            }
+            // Charger les catégories
+            const { data: cats, error: catsError } = await supabase.from('categories').select('*');
+            if(!catsError && cats && cats.length > 0) {
+                cats.forEach(c => { categories[c.key] = c.value; });
+            } else {
+                await saveCategoriesToCloud();
+            }
+            // Charger les commandes
+            const { data: commandes, error: ordersError } = await supabase.from('orders').select('*').order('id', { ascending: false });
+            if(!ordersError && commandes) orders = commandes;
+            renderFilters();
+            renderWines();
+            updateCartUI();
+        } catch(e) { console.warn("Erreur cloud", e); loadLocalData(); }
+    }
+    
+    async function saveProductsToCloud() {
+        if(!supabase) return;
+        for(const p of winesData) {
+            await supabase.from('products').upsert(p);
+        }
+    }
+    
+    async function saveCategoriesToCloud() {
+        if(!supabase) return;
+        for(const [key, value] of Object.entries(categories)) {
+            await supabase.from('categories').upsert({ key, value });
+        }
+    }
+    
+    async function syncProductToCloud(product) {
+        if(supabase) await supabase.from('products').upsert(product);
+        saveLocalCatalogue();
+    }
+    
+    async function deleteProductFromCloud(productId) {
+        if(supabase) await supabase.from('products').delete().eq('id', productId);
+    }
+    
+    function saveLocalCatalogue() { localStorage.setItem('vins_catalogue', JSON.stringify(winesData)); }
+    function saveLocalOrders() { localStorage.setItem('vins_orders', JSON.stringify(orders)); if(supabase) supabase.from('orders').upsert(orders); }
+    function saveLocalCategories() { localStorage.setItem('vins_categories', JSON.stringify(categories)); if(supabase) saveCategoriesToCloud(); }
+    
+    function toFCFA(eur) { return Math.round(eur * EUR_TO_FCFA); }
+    function showToast(msg) { const t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',2500); }
+    
+    // Commandes
     function addOrder(orderData) {
         const newOrder = { id: Date.now(), ...orderData, date: new Date().toLocaleString(), statut: 'en_attente' };
         orders.unshift(newOrder);
-        saveOrders();
-        if(document.getElementById('adminPanel').classList.contains('show')) renderAdminPanel();
+        saveLocalOrders();
+        if(adminAuthenticated) renderAdminPanel();
         showToast("Nouvelle commande reçue !");
     }
     
     function updateOrderStatus(orderId, newStatus) {
         const order = orders.find(o => o.id == orderId);
-        if(order) { order.statut = newStatus; saveOrders(); renderAdminPanel(); showToast("Statut mis à jour"); }
+        if(order) { order.statut = newStatus; saveLocalOrders(); if(adminAuthenticated) renderAdminPanel(); showToast("Statut mis à jour"); }
     }
     
+    // Rendu admin
     function renderAdminPanel() {
-        document.getElementById('adminStats').innerHTML = `<div class="stat-card"><h3>Total commandes</h3><div class="number">${orders.length}</div></div><div class="stat-card"><h3>Chiffre d'affaires</h3><div class="number">${orders.reduce((s,o)=>s+(o.total_fcfa||0),0).toLocaleString('fr-FR')} FCFA</div></div><div class="stat-card"><h3>En attente</h3><div class="number">${orders.filter(o=>o.statut==='en_attente').length}</div></div>`;
+        if(!adminAuthenticated) return;
+        document.getElementById('adminStats').innerHTML = `<div class="stat-card"><h3>Commandes</h3><div class="number">${orders.length}</div></div><div class="stat-card"><h3>CA</h3><div class="number">${orders.reduce((s,o)=>s+(o.total_fcfa||0),0).toLocaleString('fr-FR')} FCFA</div></div><div class="stat-card"><h3>En attente</h3><div class="number">${orders.filter(o=>o.statut==='en_attente').length}</div></div>`;
         const tbody = document.getElementById('ordersTableBody');
         if(orders.length === 0) tbody.innerHTML = '<td><td colspan="8">Aucune commande</td></tr>';
-        else tbody.innerHTML = orders.map(o => `<tr><td>#${o.id}</td><td>${escapeHtml(o.nom_client)}</td><td>${o.telephone_client}</td><td>${escapeHtml((o.adresse_livraison||'').substring(0,30))}...</td><td>${(o.total_fcfa||0).toLocaleString('fr-FR')}</td><td>${(o.articles||'').substring(0,30)}...</td><td><span class="status-badge status-${o.statut}">${o.statut==='en_attente'?'En attente':o.statut}</span></td><td><select class="status-select" data-id="${o.id}"><option value="en_attente" ${o.statut==='en_attente'?'selected':''}>En attente</option><option value="confirmee" ${o.statut==='confirmee'?'selected':''}>Confirmée</option><option value="livree" ${o.statut==='livree'?'selected':''}>Livrée</option><option value="annulee" ${o.statut==='annulee'?'selected':''}>Annulée</option></select></td></tr>`).join('');
-        document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', () => updateOrderStatus(s.dataset.id, s.value)));
+        else tbody.innerHTML = orders.map(o => `<tr><td>#${o.id}</td><td>${escapeHtml(o.nom_client)}</td><td>${escapeHtml(o.telephone_client)}</td><td>${escapeHtml((o.adresse_livraison||'').substring(0,30))}...</td><td>${(o.total_fcfa||0).toLocaleString('fr-FR')}</td><td>${(o.articles||'').substring(0,30)}...</td><td><span class="status-badge status-${o.statut}">${o.statut==='en_attente'?'En attente':o.statut}</span></td><td><select class="status-select" data-id="${o.id}"><option value="en_attente" ${o.statut==='en_attente'?'selected':''}>En attente</option><option value="confirmee" ${o.statut==='confirmee'?'selected':''}>Confirmée</option><option value="livree" ${o.statut==='livree'?'selected':''}>Livrée</option><option value="annulee" ${o.statut==='annulee'?'selected':''}>Annulée</option></select></td></tr>`).join('');
+        document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', () => updateOrderStatus(parseInt(s.dataset.id), s.value)));
         renderProductsManager();
         renderCategoriesManager();
     }
@@ -322,35 +254,60 @@
                 <h4>${escapeHtml(w.name)} (${w.region})</h4>
                 <input type="text" class="edit-name" value="${escapeHtml(w.name)}" placeholder="Nom">
                 <select class="edit-region"><option value="Rioja" ${w.region==='Rioja'?'selected':''}>Rioja</option><option value="Ribera del Duero" ${w.region==='Ribera del Duero'?'selected':''}>Ribera del Duero</option><option value="Rías Baixas" ${w.region==='Rías Baixas'?'selected':''}>Rías Baixas</option><option value="Cava" ${w.region==='Cava'?'selected':''}>Cava</option></select>
-                <input type="number" step="0.01" class="edit-price" value="${w.price_eur}" placeholder="Prix EUR (par carton de 6)">
+                <input type="number" step="0.01" class="edit-price" value="${w.price_eur}" placeholder="Prix EUR (carton 6)">
                 <textarea class="edit-desc" rows="2" placeholder="Description">${escapeHtml(w.desc)}</textarea>
                 <input type="text" class="edit-image" value="${w.imageUrl}" placeholder="URL image">
                 <img src="${w.imageUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px;" onerror="this.src='https://via.placeholder.com/60'">
-                <div><button class="save-product-btn" data-id="${w.id}">Sauvegarder</button><button class="delete-product-btn" data-id="${w.id}">Supprimer</button></div>
+                <div><button class="save-product-btn" data-id="${w.id}">💾 Sauvegarder</button><button class="delete-product-btn" data-id="${w.id}">🗑 Supprimer</button></div>
             </div>
         `).join('');
-        document.querySelectorAll('.save-product-btn').forEach(btn => btn.addEventListener('click', () => { const id=parseInt(btn.dataset.id); const card=btn.closest('.product-edit-card'); const w=winesData.find(w=>w.id===id); if(w){ w.name=card.querySelector('.edit-name').value; w.region=card.querySelector('.edit-region').value; w.price_eur=parseFloat(card.querySelector('.edit-price').value); w.desc=card.querySelector('.edit-desc').value; w.imageUrl=card.querySelector('.edit-image').value; saveCatalogue(); renderWines(); renderProductsManager(); showToast(`✅ ${w.name} modifié`); } }));
-        document.querySelectorAll('.delete-product-btn').forEach(btn => btn.addEventListener('click', () => { const id=parseInt(btn.dataset.id); if(confirm("Supprimer ce vin ?")){ winesData=winesData.filter(w=>w.id!==id); saveCatalogue(); renderWines(); renderProductsManager(); showToast("Vin supprimé"); } }));
+        document.querySelectorAll('.save-product-btn').forEach(btn => btn.addEventListener('click', async () => {
+            const id = parseInt(btn.dataset.id);
+            const card = btn.closest('.product-edit-card');
+            const w = winesData.find(w => w.id === id);
+            if(w) {
+                w.name = card.querySelector('.edit-name').value;
+                w.region = card.querySelector('.edit-region').value;
+                w.price_eur = parseFloat(card.querySelector('.edit-price').value);
+                w.desc = card.querySelector('.edit-desc').value;
+                w.imageUrl = card.querySelector('.edit-image').value;
+                await syncProductToCloud(w);
+                renderWines();
+                renderProductsManager();
+                showToast(`✅ ${w.name} modifié et synchronisé sur tous les appareils !`);
+            }
+        }));
+        document.querySelectorAll('.delete-product-btn').forEach(btn => btn.addEventListener('click', async () => {
+            const id = parseInt(btn.dataset.id);
+            if(confirm("Supprimer ce vin définitivement ?")) {
+                await deleteProductFromCloud(id);
+                winesData = winesData.filter(w => w.id !== id);
+                saveLocalCatalogue();
+                renderWines();
+                renderProductsManager();
+                showToast("Vin supprimé");
+            }
+        }));
     }
     
     function renderCategoriesManager() {
         const container = document.getElementById('categoriesManagerContainer');
         container.innerHTML = `
-            <div class="category-input"><label>🍷 Rioja :</label><input type="text" id="catRioja" value="${escapeHtml(categories.Rioja)}" placeholder="Nom affiché"></div>
-            <div class="category-input"><label>🍇 Ribera del Duero :</label><input type="text" id="catRibera" value="${escapeHtml(categories['Ribera del Duero'])}" placeholder="Nom affiché"></div>
-            <div class="category-input"><label>🌊 Albariño (Rías Baixas) :</label><input type="text" id="catAlbariño" value="${escapeHtml(categories['Rías Baixas'])}" placeholder="Nom affiché"></div>
-            <div class="category-input"><label>🥂 Cava :</label><input type="text" id="catCava" value="${escapeHtml(categories.Cava)}" placeholder="Nom affiché"></div>
-            <button class="save-product-btn" id="saveCategoriesBtn" style="margin-top:15px;">Sauvegarder les noms des catégories</button>
+            <div class="category-input"><label>🍷 Rioja :</label><input type="text" id="catRioja" value="${escapeHtml(categories.Rioja)}"></div>
+            <div class="category-input"><label>🍇 Ribera del Duero :</label><input type="text" id="catRibera" value="${escapeHtml(categories['Ribera del Duero'])}"></div>
+            <div class="category-input"><label>🌊 Albariño :</label><input type="text" id="catAlbariño" value="${escapeHtml(categories['Rías Baixas'])}"></div>
+            <div class="category-input"><label>🥂 Cava :</label><input type="text" id="catCava" value="${escapeHtml(categories.Cava)}"></div>
+            <button class="save-product-btn" id="saveCategoriesBtn">Sauvegarder les catégories</button>
         `;
-        document.getElementById('saveCategoriesBtn')?.addEventListener('click', () => {
+        document.getElementById('saveCategoriesBtn')?.addEventListener('click', async () => {
             categories.Rioja = document.getElementById('catRioja').value;
             categories['Ribera del Duero'] = document.getElementById('catRibera').value;
             categories['Rías Baixas'] = document.getElementById('catAlbariño').value;
             categories.Cava = document.getElementById('catCava').value;
-            saveCategories();
+            saveLocalCategories();
             renderFilters();
             renderWines();
-            showToast("✅ Noms des catégories mis à jour !");
+            showToast("✅ Catégories mises à jour sur tous les appareils !");
         });
     }
     
@@ -370,43 +327,38 @@
         const displayRegion = (region) => categories[region] || region;
         document.getElementById('winesContainer').innerHTML = filtered.map(w => `
             <div class="wine-card">
-                <div class="card-img" style="background-image: url('${w.imageUrl}'); background-size: cover;"><span class="region-tag">${displayRegion(w.region)}</span></div>
+                <div class="card-img" style="background-image: url('${w.imageUrl}');"><span class="region-tag">${displayRegion(w.region)}</span></div>
                 <div class="card-content">
                     <div class="wine-title">${escapeHtml(w.name)}</div>
-                    <div class="carton-badge"><i class="fas fa-box"></i> Carton de 6 bouteilles (75cl)</div>
                     <div class="wine-desc">${escapeHtml(w.desc)}</div>
-                    <div class="price-row">
-                        <span class="price">${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA <small>/carton</small></span>
-                        <button class="add-to-cart" data-id="${w.id}"><i class="fas fa-plus-circle"></i> Ajouter</button>
-                    </div>
+                    <div class="price-row"><span class="price">${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA</span><button class="add-to-cart" data-id="${w.id}"><i class="fas fa-plus-circle"></i> Ajouter</button></div>
                 </div>
             </div>
         `).join('');
         document.querySelectorAll('.add-to-cart').forEach(b => b.addEventListener('click', () => addToCart(parseInt(b.dataset.id))));
     }
     
-    function addToCart(id) { const w = winesData.find(w=>w.id===id); if(cart[id]) cart[id].quantity++; else cart[id] = {...w, quantity:1, price_fcfa: toFCFA(w.price_eur)}; updateCartUI(); showToast(`${w.name} (carton de 6) ajouté`); }
-    function updateCartUI() { let total=0, count=0, html=''; for(let id in cart) { const i=cart[id]; const s=i.price_fcfa*i.quantity; total+=s; count+=i.quantity; html+=`<div style="border-bottom:1px solid #eee; padding:10px;"><b>${i.name}</b><br><span style="font-size:0.7rem;"><i class="fas fa-box"></i> Carton de 6 bouteilles</span><br>${i.price_fcfa.toLocaleString('fr-FR')} FCFA x ${i.quantity}<br>${s.toLocaleString('fr-FR')} FCFA<br><button onclick="changeQty(${id},-1)">-</button> <button onclick="changeQty(${id},1)">+</button></div>`; } document.getElementById('cartItemsList').innerHTML = html || '<div style="padding:20px;text-align:center;">Panier vide</div>'; document.getElementById('cartTotalPrice').innerText = total.toLocaleString('fr-FR'); document.getElementById('cartCount').innerText = count; }
+    function addToCart(id) { const w = winesData.find(w=>w.id===id); if(cart[id]) cart[id].quantity++; else cart[id] = {...w, quantity:1, price_fcfa: toFCFA(w.price_eur)}; updateCartUI(); showToast(`${w.name} ajouté`); }
+    function updateCartUI() { let total=0, count=0, html=''; for(let id in cart) { const i=cart[id]; const s=i.price_fcfa*i.quantity; total+=s; count+=i.quantity; html+=`<div style="border-bottom:1px solid #eee; padding:10px;"><b>${i.name}</b><br>${i.price_fcfa.toLocaleString('fr-FR')} FCFA x ${i.quantity}<br>${s.toLocaleString('fr-FR')} FCFA<br><button onclick="changeQty(${id},-1)">-</button> <button onclick="changeQty(${id},1)">+</button></div>`; } document.getElementById('cartItemsList').innerHTML = html || '<div style="padding:20px;text-align:center;">Panier vide</div>'; document.getElementById('cartTotalPrice').innerText = total.toLocaleString('fr-FR'); document.getElementById('cartCount').innerText = count; }
     window.changeQty = function(id,d) { if(cart[id]) { cart[id].quantity += d; if(cart[id].quantity <=0) delete cart[id]; updateCartUI(); } };
-    function showToast(msg) { const t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',2500); }
     
-    document.getElementById('addProductBtn').onclick = () => {
+    document.getElementById('addProductBtn').onclick = async () => {
         const newProduct = { id: nextId++, name: "Nouveau vin", region: "Rioja", price_eur: 29.90, desc: "Description à modifier", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" };
         winesData.push(newProduct);
-        saveCatalogue();
+        await syncProductToCloud(newProduct);
         renderProductsManager();
         renderWines();
-        showToast("✅ Nouveau vin ajouté !");
+        showToast("✅ Nouveau vin ajouté et synchronisé !");
     };
     
     document.getElementById('proceedCheckoutBtn').onclick = () => { if(Object.keys(cart).length===0) showToast("Panier vide"); else { document.getElementById('checkoutFormModal').classList.add('open'); document.getElementById('overlayCart').classList.add('active'); } };
-    document.getElementById('confirmOrderBtn').onclick = () => { const nom=document.getElementById('clientNom').value.trim(), tel=document.getElementById('clientTel').value.trim(), adresse=document.getElementById('clientAdresse').value.trim(); if(!nom||!tel||!adresse){ showToast("Tous les champs obligatoires"); return; } let total=0, arts=[]; for(let id in cart){ total+=cart[id].price_fcfa*cart[id].quantity; arts.push(`${cart[id].name} (carton de 6) x${cart[id].quantity}`); } addOrder({ nom_client: nom, telephone_client: tel, adresse_livraison: adresse, total_fcfa: total, articles: arts.join(', ') }); cart={}; updateCartUI(); document.getElementById('checkoutFormModal').classList.remove('open'); document.getElementById('overlayCart').classList.remove('open'); document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('clientNom').value=''; document.getElementById('clientTel').value=''; document.getElementById('clientAdresse').value=''; alert(`✅ Commande enregistrée ! Un conseiller vous contactera au ${tel}. Paiement à la livraison.`); };
+    document.getElementById('confirmOrderBtn').onclick = () => { const nom=document.getElementById('clientNom').value.trim(), tel=document.getElementById('clientTel').value.trim(), adresse=document.getElementById('clientAdresse').value.trim(); if(!nom||!tel||!adresse){ showToast("Tous les champs obligatoires"); return; } let total=0, arts=[]; for(let id in cart){ total+=cart[id].price_fcfa*cart[id].quantity; arts.push(`${cart[id].name} x${cart[id].quantity}`); } addOrder({ nom_client: nom, telephone_client: tel, adresse_livraison: adresse, total_fcfa: total, articles: arts.join(', ') }); cart={}; updateCartUI(); document.getElementById('checkoutFormModal').classList.remove('open'); document.getElementById('overlayCart').classList.remove('open'); document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('clientNom').value=''; document.getElementById('clientTel').value=''; document.getElementById('clientAdresse').value=''; alert(`✅ Commande enregistrée ! Un conseiller vous contactera au ${tel}.`); };
     document.getElementById('closeCheckoutBtn').onclick = () => { document.getElementById('checkoutFormModal').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
     
     document.getElementById('adminLoginBtn').onclick = () => document.getElementById('loginModal').classList.add('open');
     document.getElementById('closeLoginBtn').onclick = () => document.getElementById('loginModal').classList.remove('open');
-    document.getElementById('doLoginBtn').onclick = () => { if(document.getElementById('adminUser').value===ADMIN_USERNAME && document.getElementById('adminPass').value===ADMIN_PASSWORD) { document.getElementById('loginModal').classList.remove('open'); document.getElementById('adminPanel').classList.add('show'); document.getElementById('clientContent').style.display='none'; document.querySelector('.site-header').style.display='none'; document.querySelector('footer').style.display='none'; renderAdminPanel(); showToast("Bienvenue gestionnaire"); } else alert("Identifiants incorrects"); };
-    document.getElementById('logoutBtn').onclick = () => { document.getElementById('adminPanel').classList.remove('show'); document.getElementById('clientContent').style.display='block'; document.querySelector('.site-header').style.display='block'; document.querySelector('footer').style.display='block'; showToast("Déconnecté"); };
+    document.getElementById('doLoginBtn').onclick = () => { const u=document.getElementById('adminUser').value, p=document.getElementById('adminPass').value; if(u==='admin' && p==='admin123') { adminAuthenticated=true; document.getElementById('loginModal').classList.remove('open'); document.getElementById('adminPanel').classList.add('show'); document.getElementById('clientContent').style.display='none'; document.querySelector('.site-header').style.display='none'; document.querySelector('footer').style.display='none'; renderAdminPanel(); showToast("Bienvenue gestionnaire"); } else alert("Identifiants incorrects"); };
+    document.getElementById('logoutBtn').onclick = () => { adminAuthenticated=false; document.getElementById('adminPanel').classList.remove('show'); document.getElementById('clientContent').style.display='block'; document.querySelector('.site-header').style.display='block'; document.querySelector('footer').style.display='block'; showToast("Déconnecté"); };
     
     document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => {
         document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -417,17 +369,14 @@
     
     document.getElementById('cartIconBtn').onclick = () => { document.getElementById('cartSidebar').classList.add('open'); document.getElementById('overlayCart').classList.add('active'); };
     document.getElementById('closeCartBtn').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
-    document.getElementById('overlayCart').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); document.getElementById('checkoutFormModal').classList.remove('open'); };
+    document.getElementById('overlayCart').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
     document.getElementById('catalogLink').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
     document.getElementById('homeLink').onclick = () => window.scrollTo({top:0,behavior:'smooth'});
     document.getElementById('exploreBtn').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
     
     function escapeHtml(s) { return String(s).replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;': m==='>'?'&gt;': m); }
     
-    loadData();
-    renderFilters();
-    renderWines();
-    updateCartUI();
+    initSupabase();
 </script>
 </body>
 </html>

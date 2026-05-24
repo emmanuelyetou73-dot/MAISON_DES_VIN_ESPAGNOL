@@ -110,94 +110,130 @@
 <div class="toast-msg" id="toastMsg"></div>
 
 <script>
-    // ⭐⭐⭐ VOUS DEVEZ REMPLACER CES 2 LIGNES ⭐⭐⭐
-    const SUPABASE_URL = "https://tzvdlmlruigzpfkgfvzi.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6dmRsbWxydWlnenBma2dmdnppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNjQwOTIsImV4cCI6MjA5NDg0MDA5Mn0.T281ZX2xTHb74mObKe3Wd7n_52F4v_Qp7Q548eMEjBU";
-    // ⭐⭐⭐ FIN DES REMPLACEMENTS ⭐⭐⭐
+    // ========== CONFIGURATION SUPABASE (À REMPLACER PAR VOS VALEURS) ==========
+    const SUPABASE_URL = "https://rhkobliybyewurbwqghp.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoa29ibGl5Ynlld3VyYndxZ2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzczMDUwMDAsImV4cCI6MjA1Mjg4MTAwMH0.-vqWpY-pZ2_XPvwzZgBGPvSGp2h8Sg_qM7hvUzUFVng";
+    // =======================================================================
     
     const EUR_TO_FCFA = 655.957;
-    let supabase = null;
+    let supabaseClient = null;  // ← Renommé pour éviter le conflit
     let adminAuthenticated = false;
+    
+    // Initialisation Supabase
+    try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log("✅ Supabase connecté");
+    } catch(e) {
+        console.warn("Supabase non configuré, utilisation du mode local");
+        supabaseClient = null;
+    }
+    
+    // Données locales (fallback)
+    let categories = { "Rioja": "Rioja", "Ribera del Duero": "Ribera del Duero", "Rías Baixas": "Albariño", "Cava": "Cava" };
     let winesData = [];
-    let categories = {};
     let orders = [];
     let cart = {};
+    let nextId = 1;
     
-    // Initialiser Supabase
-    try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log("✅ Supabase connecté");
-    } catch(e) { console.error("Erreur Supabase", e); }
+    // Produits par défaut
+    const defaultWines = [
+        { id: 1, name: "Gran Reserva 904", region: "Rioja", price_eur: 49.90, description: "Élevage 24 mois en fût de chêne, notes de cuir et fruits noirs.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
+        { id: 2, name: "Viña Pomal Crianza", region: "Rioja", price_eur: 18.90, description: "Fruits rouges, vanille naturelle. Vin bio certifié.", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" },
+        { id: 3, name: "Dominio del Águila", region: "Ribera del Duero", price_eur: 89.00, description: "Granitique, très minéral. Agriculture biodynamique.", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
+        { id: 4, name: "Emilio Moro", region: "Ribera del Duero", price_eur: 27.50, description: "Puissant, arômes de mûre sauvage.", imageUrl: "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=400&h=220&fit=crop" },
+        { id: 5, name: "Albariño Pazo de Señorans", region: "Rías Baixas", price_eur: 24.90, description: "Fraîcheur saline, arômes d'agrumes.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 6, name: "Fillaboa Albariño", region: "Rías Baixas", price_eur: 19.90, description: "Vif et élégant, parfait avec fruits de mer.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 7, name: "Cava Gramona Brut", region: "Cava", price_eur: 22.00, description: "Bulles fines, élevage 30 mois.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" },
+        { id: 8, name: "Recaredo Reserva Particular", region: "Cava", price_eur: 45.00, description: "Corporezza, notes de brioche.", imageUrl: "https://images.unsplash.com/photo-1561405774-9285da7b5bb9?w=400&h=220&fit=crop" }
+    ];
     
     async function loadAllData() {
-        if(!supabase) return;
+        // Charger depuis Supabase ou localStorage
+        if(supabaseClient) {
+            try {
+                const { data: products } = await supabaseClient.from('products').select('*');
+                if(products && products.length > 0) {
+                    winesData = products;
+                } else {
+                    winesData = [...defaultWines];
+                    for(const p of winesData) {
+                        await supabaseClient.from('products').insert(p);
+                    }
+                }
+                const { data: cats } = await supabaseClient.from('categories').select('*');
+                if(cats && cats.length > 0) {
+                    cats.forEach(c => categories[c.key] = c.value);
+                }
+                const { data: commandes } = await supabaseClient.from('orders').select('*').order('id', { ascending: false });
+                if(commandes) orders = commandes;
+            } catch(e) { console.warn("Erreur Supabase, fallback localStorage", e); loadLocalData(); }
+        } else {
+            loadLocalData();
+        }
         
-        // Charger les produits
-        const { data: products, error: productsError } = await supabase.from('products').select('*');
-        if(productsError) console.error(productsError);
-        if(products && products.length > 0) winesData = products;
-        
-        // Charger les catégories
-        const { data: cats } = await supabase.from('categories').select('*');
-        if(cats && cats.length > 0) cats.forEach(c => categories[c.key] = c.value);
-        
-        // Charger les commandes
-        const { data: commandes } = await supabase.from('orders').select('*').order('id', { ascending: false });
-        if(commandes) orders = commandes;
-        
-        // Rafraîchir l'affichage
+        if(winesData.length > 0) nextId = Math.max(...winesData.map(w => w.id), 0) + 1;
         renderFilters();
         renderWines();
         updateCartUI();
         if(adminAuthenticated) renderAdminPanel();
     }
     
-    async function saveProductToCloud(product) {
-        if(product.id) {
-            await supabase.from('products').update(product).eq('id', product.id);
-        } else {
-            await supabase.from('products').insert(product);
+    function loadLocalData() {
+        const savedWines = localStorage.getItem('vins_catalogue');
+        winesData = savedWines ? JSON.parse(savedWines) : [...defaultWines];
+        const savedOrders = localStorage.getItem('vins_orders');
+        orders = savedOrders ? JSON.parse(savedOrders) : [];
+        const savedCategories = localStorage.getItem('vins_categories');
+        if(savedCategories) categories = JSON.parse(savedCategories);
+    }
+    
+    function saveLocalCatalogue() { localStorage.setItem('vins_catalogue', JSON.stringify(winesData)); }
+    function saveLocalOrders() { localStorage.setItem('vins_orders', JSON.stringify(orders)); }
+    function saveLocalCategories() { localStorage.setItem('vins_categories', JSON.stringify(categories)); }
+    
+    async function syncProductToCloud(product) {
+        if(supabaseClient) {
+            if(product.id) await supabaseClient.from('products').update(product).eq('id', product.id);
+            else await supabaseClient.from('products').insert(product);
         }
-        await loadAllData();
+        saveLocalCatalogue();
     }
     
     async function deleteProductFromCloud(id) {
-        await supabase.from('products').delete().eq('id', id);
-        await loadAllData();
-    }
-    
-    async function updateCategoryInCloud(key, value) {
-        await supabase.from('categories').upsert({ key, value });
-        await loadAllData();
+        if(supabaseClient) await supabaseClient.from('products').delete().eq('id', id);
+        winesData = winesData.filter(w => w.id !== id);
+        saveLocalCatalogue();
     }
     
     async function addOrderToCloud(order) {
-        await supabase.from('orders').insert(order);
-        await loadAllData();
-    }
-    
-    async function updateOrderStatusCloud(id, status) {
-        await supabase.from('orders').update({ statut: status }).eq('id', id);
-        await loadAllData();
+        if(supabaseClient) await supabaseClient.from('orders').insert(order);
+        orders.unshift(order);
+        saveLocalOrders();
     }
     
     function toFCFA(eur) { return Math.round(eur * EUR_TO_FCFA); }
     function showToast(msg) { const t=document.getElementById('toastMsg'); t.innerText=msg; t.style.opacity='1'; setTimeout(()=>t.style.opacity='0',2500); }
     
+    // Fonctions de rendu (identiques à avant)
     function renderAdminPanel() {
         if(!adminAuthenticated) return;
         document.getElementById('adminStats').innerHTML = `<div class="stat-card"><h3>Commandes</h3><div class="number">${orders.length}</div></div><div class="stat-card"><h3>CA</h3><div class="number">${orders.reduce((s,o)=>s+(o.total_fcfa||0),0).toLocaleString('fr-FR')} FCFA</div></div><div class="stat-card"><h3>En attente</h3><div class="number">${orders.filter(o=>o.statut==='en_attente').length}</div></div>`;
         const tbody = document.getElementById('ordersTableBody');
         if(orders.length === 0) tbody.innerHTML = '<tr><td colspan="8">Aucune commande</td></tr>';
         else tbody.innerHTML = orders.map(o => `<tr><td>#${o.id}</td><td>${escapeHtml(o.nom_client)}</td><td>${escapeHtml(o.telephone_client)}</td><td>${escapeHtml((o.adresse_livraison||'').substring(0,30))}...</td><td>${(o.total_fcfa||0).toLocaleString('fr-FR')}</td><td>${(o.articles||'').substring(0,30)}...</td><td><span class="status-badge status-${o.statut}">${o.statut==='en_attente'?'En attente':o.statut}</span></td><td><select class="status-select" data-id="${o.id}"><option value="en_attente" ${o.statut==='en_attente'?'selected':''}>En attente</option><option value="confirmee" ${o.statut==='confirmee'?'selected':''}>Confirmée</option><option value="livree" ${o.statut==='livree'?'selected':''}>Livrée</option><option value="annulee" ${o.statut==='annulee'?'selected':''}>Annulée</option></select></td></tr>`).join('');
-        document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', () => updateOrderStatusCloud(parseInt(s.dataset.id), s.value)));
+        document.querySelectorAll('.status-select').forEach(s => s.addEventListener('change', async () => {
+            const id = parseInt(s.dataset.id);
+            const newStatus = s.value;
+            const order = orders.find(o => o.id === id);
+            if(order) { order.statut = newStatus; saveLocalOrders(); if(supabaseClient) await supabaseClient.from('orders').update({ statut: newStatus }).eq('id', id); renderAdminPanel(); showToast("Statut mis à jour"); }
+        }));
         renderProductsManager();
         renderCategoriesManager();
     }
     
     function renderProductsManager() {
         const container = document.getElementById('productsManagerContainer');
-        container.innerHTML = winesData.map(w => `<div class="product-edit-card"><h4>${escapeHtml(w.name)} (${w.region})</h4><input type="text" class="edit-name" value="${escapeHtml(w.name)}"><select class="edit-region"><option value="Rioja" ${w.region==='Rioja'?'selected':''}>Rioja</option><option value="Ribera del Duero" ${w.region==='Ribera del Duero'?'selected':''}>Ribera del Duero</option><option value="Rías Baixas" ${w.region==='Rías Baixas'?'selected':''}>Rías Baixas</option><option value="Cava" ${w.region==='Cava'?'selected':''}>Cava</option></select><input type="number" step="0.01" class="edit-price" value="${w.price_eur}"><textarea class="edit-desc" rows="2">${escapeHtml(w.description||'')}</textarea><input type="text" class="edit-image" value="${w.imageUrl}"><img src="${w.imageUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px;" onerror="this.src='https://via.placeholder.com/60'"><div><button class="save-product-btn" data-id="${w.id}">💾 Sauvegarder</button><button class="delete-product-btn" data-id="${w.id}">🗑 Supprimer</button></div></div>`).join('');
+        container.innerHTML = winesData.map(w => `<div class="product-edit-card"><h4>${escapeHtml(w.name)} (${w.region})</h4><input type="text" class="edit-name" value="${escapeHtml(w.name)}"><select class="edit-region"><option value="Rioja" ${w.region==='Rioja'?'selected':''}>Rioja</option><option value="Ribera del Duero" ${w.region==='Ribera del Duero'?'selected':''}>Ribera del Duero</option><option value="Rías Baixas" ${w.region==='Rías Baixas'?'selected':''}>Rías Baixas</option><option value="Cava" ${w.region==='Cava'?'selected':''}>Cava</option></select><input type="number" step="0.01" class="edit-price" value="${w.price_eur}"><textarea class="edit-desc" rows="2">${escapeHtml(w.description)}</textarea><input type="text" class="edit-image" value="${w.imageUrl}"><img src="${w.imageUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px;" onerror="this.src='https://placehold.co/60x60?text=Vin'"><div><button class="save-product-btn" data-id="${w.id}">💾 Sauvegarder</button><button class="delete-product-btn" data-id="${w.id}">🗑 Supprimer</button></div></div>`).join('');
         document.querySelectorAll('.save-product-btn').forEach(btn => btn.addEventListener('click', async () => {
             const id = parseInt(btn.dataset.id);
             const card = btn.closest('.product-edit-card');
@@ -208,7 +244,9 @@
                 w.price_eur = parseFloat(card.querySelector('.edit-price').value);
                 w.description = card.querySelector('.edit-desc').value;
                 w.imageUrl = card.querySelector('.edit-image').value;
-                await saveProductToCloud(w);
+                await syncProductToCloud(w);
+                renderWines();
+                renderProductsManager();
                 showToast(`✅ ${w.name} modifié et synchronisé !`);
             }
         }));
@@ -216,6 +254,8 @@
             const id = parseInt(btn.dataset.id);
             if(confirm("Supprimer ce vin ?")) {
                 await deleteProductFromCloud(id);
+                renderWines();
+                renderProductsManager();
                 showToast("Vin supprimé");
             }
         }));
@@ -223,19 +263,22 @@
     
     function renderCategoriesManager() {
         const container = document.getElementById('categoriesManagerContainer');
-        container.innerHTML = `<div class="category-input"><label>Rioja :</label><input type="text" id="catRioja" value="${escapeHtml(categories.Rioja||'Rioja')}"></div><div class="category-input"><label>Ribera del Duero :</label><input type="text" id="catRibera" value="${escapeHtml(categories['Ribera del Duero']||'Ribera del Duero')}"></div><div class="category-input"><label>Albariño :</label><input type="text" id="catAlbariño" value="${escapeHtml(categories['Rías Baixas']||'Albariño')}"></div><div class="category-input"><label>Cava :</label><input type="text" id="catCava" value="${escapeHtml(categories.Cava||'Cava')}"></div><button class="save-product-btn" id="saveCategoriesBtn">Sauvegarder les catégories</button>`;
-        document.getElementById('saveCategoriesBtn')?.addEventListener('click', async () => {
-            await updateCategoryInCloud('Rioja', document.getElementById('catRioja').value);
-            await updateCategoryInCloud('Ribera del Duero', document.getElementById('catRibera').value);
-            await updateCategoryInCloud('Rías Baixas', document.getElementById('catAlbariño').value);
-            await updateCategoryInCloud('Cava', document.getElementById('catCava').value);
+        container.innerHTML = `<div class="category-input"><label>🍷 Rioja :</label><input type="text" id="catRioja" value="${escapeHtml(categories.Rioja)}"></div><div class="category-input"><label>🍇 Ribera del Duero :</label><input type="text" id="catRibera" value="${escapeHtml(categories['Ribera del Duero'])}"></div><div class="category-input"><label>🌊 Albariño :</label><input type="text" id="catAlbariño" value="${escapeHtml(categories['Rías Baixas'])}"></div><div class="category-input"><label>🥂 Cava :</label><input type="text" id="catCava" value="${escapeHtml(categories.Cava)}"></div><button class="save-product-btn" id="saveCategoriesBtn">Sauvegarder les catégories</button>`;
+        document.getElementById('saveCategoriesBtn')?.addEventListener('click', () => {
+            categories.Rioja = document.getElementById('catRioja').value;
+            categories['Ribera del Duero'] = document.getElementById('catRibera').value;
+            categories['Rías Baixas'] = document.getElementById('catAlbariño').value;
+            categories.Cava = document.getElementById('catCava').value;
+            saveLocalCategories();
+            renderFilters();
+            renderWines();
             showToast("✅ Catégories mises à jour !");
         });
     }
     
     function renderFilters() {
         const filterContainer = document.getElementById('filterGroup');
-        filterContainer.innerHTML = `<button class="filter-btn active" data-filter="all">Tous</button><button class="filter-btn" data-filter="Rioja">${escapeHtml(categories.Rioja||'Rioja')}</button><button class="filter-btn" data-filter="Ribera del Duero">${escapeHtml(categories['Ribera del Duero']||'Ribera del Duero')}</button><button class="filter-btn" data-filter="Rías Baixas">${escapeHtml(categories['Rías Baixas']||'Albariño')}</button><button class="filter-btn" data-filter="Cava">${escapeHtml(categories.Cava||'Cava')}</button>`;
+        filterContainer.innerHTML = `<button class="filter-btn active" data-filter="all">Tous</button><button class="filter-btn" data-filter="Rioja">${escapeHtml(categories.Rioja)}</button><button class="filter-btn" data-filter="Ribera del Duero">${escapeHtml(categories['Ribera del Duero'])}</button><button class="filter-btn" data-filter="Rías Baixas">${escapeHtml(categories['Rías Baixas'])}</button><button class="filter-btn" data-filter="Cava">${escapeHtml(categories.Cava)}</button>`;
         document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => {
             document.querySelectorAll('.filter-btn').forEach(btn=>btn.classList.remove('active'));
             b.classList.add('active');
@@ -247,7 +290,7 @@
         const filter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
         let filtered = filter === 'all' ? winesData : winesData.filter(w => w.region === filter);
         const displayRegion = (region) => categories[region] || region;
-        document.getElementById('winesContainer').innerHTML = filtered.map(w => `<div class="wine-card"><div class="card-img" style="background-image: url('${w.imageUrl}');"><span class="region-tag">${displayRegion(w.region)}</span></div><div class="card-content"><div class="wine-title">${escapeHtml(w.name)}</div><div class="wine-desc">${escapeHtml(w.description||'')}</div><div class="price-row"><span class="price">${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA</span><button class="add-to-cart" data-id="${w.id}"><i class="fas fa-plus-circle"></i> Ajouter</button></div></div></div>`).join('');
+        document.getElementById('winesContainer').innerHTML = filtered.map(w => `<div class="wine-card"><div class="card-img" style="background-image: url('${w.imageUrl}');"><span class="region-tag">${displayRegion(w.region)}</span></div><div class="card-content"><div class="wine-title">${escapeHtml(w.name)}</div><div class="wine-desc">${escapeHtml(w.description)}</div><div class="price-row"><span class="price">${toFCFA(w.price_eur).toLocaleString('fr-FR')} FCFA</span><button class="add-to-cart" data-id="${w.id}"><i class="fas fa-plus-circle"></i> Ajouter</button></div></div></div>`).join('');
         document.querySelectorAll('.add-to-cart').forEach(b => b.addEventListener('click', () => addToCart(parseInt(b.dataset.id))));
     }
     
@@ -256,14 +299,16 @@
     window.changeQty = function(id,d) { if(cart[id]) { cart[id].quantity += d; if(cart[id].quantity <=0) delete cart[id]; updateCartUI(); } };
     
     document.getElementById('addProductBtn').onclick = async () => {
-        const newProduct = { name: "Nouveau vin", region: "Rioja", price_eur: 29.90, description: "Description à modifier", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" };
-        await supabase.from('products').insert(newProduct);
-        await loadAllData();
+        const newProduct = { id: nextId++, name: "Nouveau vin", region: "Rioja", price_eur: 29.90, description: "Description à modifier", imageUrl: "https://images.unsplash.com/photo-1506377245367-ffa5d63e0c8f?w=400&h=220&fit=crop" };
+        winesData.push(newProduct);
+        await syncProductToCloud(newProduct);
+        renderProductsManager();
+        renderWines();
         showToast("✅ Nouveau vin ajouté !");
     };
     
     document.getElementById('proceedCheckoutBtn').onclick = () => { if(Object.keys(cart).length===0) showToast("Panier vide"); else { document.getElementById('checkoutFormModal').classList.add('open'); document.getElementById('overlayCart').classList.add('active'); } };
-    document.getElementById('confirmOrderBtn').onclick = async () => { const nom=document.getElementById('clientNom').value.trim(), tel=document.getElementById('clientTel').value.trim(), adresse=document.getElementById('clientAdresse').value.trim(); if(!nom||!tel||!adresse){ showToast("Tous les champs obligatoires"); return; } let total=0, arts=[]; for(let id in cart){ total+=cart[id].price_fcfa*cart[id].quantity; arts.push(`${cart[id].name} x${cart[id].quantity}`); } await addOrderToCloud({ nom_client: nom, telephone_client: tel, adresse_livraison: adresse, total_fcfa: total, articles: arts.join(', '), date: new Date().toLocaleString(), statut: 'en_attente' }); cart={}; updateCartUI(); document.getElementById('checkoutFormModal').classList.remove('open'); document.getElementById('overlayCart').classList.remove('open'); document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('clientNom').value=''; document.getElementById('clientTel').value=''; document.getElementById('clientAdresse').value=''; alert(`✅ Commande enregistrée ! Un conseiller vous contactera au ${tel}.`); };
+    document.getElementById('confirmOrderBtn').onclick = async () => { const nom=document.getElementById('clientNom').value.trim(), tel=document.getElementById('clientTel').value.trim(), adresse=document.getElementById('clientAdresse').value.trim(); if(!nom||!tel||!adresse){ showToast("Tous les champs obligatoires"); return; } let total=0, arts=[]; for(let id in cart){ total+=cart[id].price_fcfa*cart[id].quantity; arts.push(`${cart[id].name} x${cart[id].quantity}`); } const newOrder = { id: Date.now(), nom_client: nom, telephone_client: tel, adresse_livraison: adresse, total_fcfa: total, articles: arts.join(', '), date: new Date().toLocaleString(), statut: 'en_attente' }; await addOrderToCloud(newOrder); cart={}; updateCartUI(); document.getElementById('checkoutFormModal').classList.remove('open'); document.getElementById('overlayCart').classList.remove('open'); document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('clientNom').value=''; document.getElementById('clientTel').value=''; document.getElementById('clientAdresse').value=''; alert(`✅ Commande enregistrée ! Un conseiller vous contactera au ${tel}.`); };
     document.getElementById('closeCheckoutBtn').onclick = () => { document.getElementById('checkoutFormModal').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
     document.getElementById('adminLoginBtn').onclick = () => document.getElementById('loginModal').classList.add('open');
     document.getElementById('closeLoginBtn').onclick = () => document.getElementById('loginModal').classList.remove('open');
@@ -272,7 +317,7 @@
     document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => { document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active-section')); document.getElementById(`${tab.dataset.tab}Section`).classList.add('active-section'); }));
     document.getElementById('cartIconBtn').onclick = () => { document.getElementById('cartSidebar').classList.add('open'); document.getElementById('overlayCart').classList.add('active'); };
     document.getElementById('closeCartBtn').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
-    document.getElementById('overlayCart').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); };
+    document.getElementById('overlayCart').onclick = () => { document.getElementById('cartSidebar').classList.remove('open'); document.getElementById('overlayCart').classList.remove('active'); document.getElementById('checkoutFormModal').classList.remove('open'); };
     document.getElementById('catalogLink').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
     document.getElementById('homeLink').onclick = () => window.scrollTo({top:0,behavior:'smooth'});
     document.getElementById('exploreBtn').onclick = () => document.getElementById('catalogueSection').scrollIntoView({behavior:'smooth'});
